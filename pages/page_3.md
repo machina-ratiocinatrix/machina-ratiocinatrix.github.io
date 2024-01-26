@@ -4,6 +4,10 @@ The probability density function (PDF) of a normal distribution, also known as a
 
 \[ f(x | \mu, \sigma^2) = \frac{1}{\sigma \sqrt{2\pi}} e^{-\frac{(x - \mu)^2}{2\sigma^2}} \]
 
+$$
+f(x) = \frac{1}{\sigma\sqrt{2\pi}} e^{-\frac{(x-\mu)^2}{2\sigma^2}}
+$$
+
 Here,
 - \( x \) is the variable.
 - \( \mu \) is the mean of the distribution.
