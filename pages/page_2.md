@@ -1,4 +1,5 @@
 {% include lib/mathjax.html %}
+
 Utilize Bayesian probability for iterative updates:
 
 \[ P(A | B) = \frac{P(B | A) \cdot P(A)}{P(B)} \]
