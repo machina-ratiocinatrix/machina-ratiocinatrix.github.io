@@ -2,7 +2,7 @@
 
 Utilize Bayesian probability for iterative updates:
 
-\[ P(A | B) = \frac{P(B | A) \cdot P(A)}{P(B)} \]
+$$ P(A | B) = \frac{P(B | A) \cdot P(A)}{P(B)} $$
 
 Incorporate feedback with Bayes' rule:
 
