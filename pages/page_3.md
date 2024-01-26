@@ -1,5 +1,7 @@
 Page 3
 
+{% include lib/mathjax.html %}
+
 The probability density function (PDF) of a normal distribution, also known as a Gaussian distribution, is given by the following formula:
 
 $$
