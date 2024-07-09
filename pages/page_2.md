@@ -11,13 +11,11 @@ $$
 
 
 $$
-\scalebox{3}{
-  $\Huge
-  \begin{array}{c}
-  d \mid b \\
-  \hline
-  q \mid p
-  \end{array}
-  $
+\hugem{50}{60}{
+    \begin{array}{c}
+    d \mid b \\
+    \hline
+    q \mid p
+    \end{array}
 }
 $$
