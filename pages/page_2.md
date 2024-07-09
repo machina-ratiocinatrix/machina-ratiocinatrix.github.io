@@ -1,6 +1,6 @@
 {% include lib/mathjax.html %}
 
-<p>
+$$
   \[
   \huge
   \begin{align*}
@@ -9,4 +9,4 @@
   q &\mid p
   \end{align*}
   \]
-</p>
+$$
