@@ -1,3 +1,7 @@
+---
+layout: home
+title: Machina Ratiocinatrix
+---
 # Machina Ratiocinatrix
 <pre>
   'Machina Ratiocinatrix' is a term used by Norbert Wiener in the introduction to his book 
