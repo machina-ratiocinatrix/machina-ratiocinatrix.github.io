@@ -5,12 +5,22 @@
 </head>
 <body>
     <h1>Test HTTPS Fetch</h1>
-    <p>Check the console for fetch results.</p>
+    <p>See the results in console.</p>
     <script>
-        fetch('https://localhost/index.html')
-            .then(response => response.text())
-            .then(data => console.log('Fetch successful:', data))
-            .catch(error => console.error('Fetch error:', error));
+        const options = {
+          method: 'GET', 
+          mode: 'no-cors',
+          headers: {
+              'Access-Control-Max-Age': 6000,
+              'Access-Control-Allow-Origin': '*',
+              'Access-Control-Allow-Methods': 'GET, POST, PUT, DELETE'
+          },
+          body: null
+        };
+        fetch('https://localhost', options)
+          .then(response => response.json())
+          .then(response => console.log(response))
+          .catch(err => console.error(err));
     </script>
 </body>
 </html>
