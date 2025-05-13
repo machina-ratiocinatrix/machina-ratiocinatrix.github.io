@@ -7,7 +7,7 @@
     <h1>Test HTTPS Fetch</h1>
     <p>Check the console for fetch results.</p>
     <script>
-        fetch('https://localhost')
+        fetch('https://localhost/index.html')
             .then(response => response.text())
             .then(data => console.log('Fetch successful:', data))
             .catch(error => console.error('Fetch error:', error));
