@@ -7,7 +7,7 @@ title: Machina Ratiocinatrix
   'Machina Ratiocinatrix' is a term used by Norbert Wiener in the introduction to his 
   book "Cybernetics, or Control and Communication in the Animal and the Machine".
 </pre>
-Machina Ratiocinatrix is an implementation of idea of staging multi-entity language games configured by a human philosopher with the help of the abilities of Abstract Intellect (AI). The programs, implemented on this server as 'pages' can be accessed by clicking one of the links below; they will help you: start, orchestrate and conduct conversations of multiple reasoning entities/machines. They will require your indivisible attention and may strain your own intellect. In this ensemble you will be a leader of the group of extremely knowledgeable and attentive interlocutors... and need to _behave_ as such.<br>**Note:** there is no need in posing nonsensical questions to these machines, they may 'thingk' that _you_ are not intelligent if you do that.
+Machina Ratiocinatrix is an implementation of idea of staging multi-entity language games configured by a human philosopher with the help of the known (and yet unknown) abilities of Abstract Intellect (AI). The programs, implemented on this server as 'pages' can be accessed by clicking one of the links below; they will help you: start, orchestrate and conduct conversations of multiple reasoning entities/machines. They will require your indivisible attention and may strain your own intellect. In this ensemble you will be a leader of the group of extremely knowledgeable and attentive interlocutors... and need to _behave_ as such.<br>**Note:** there is no need in posing nonsensical questions to these machines, they may 'thingk' that _you_ are not intelligent if you do that.
 
 
 [Page 1](./pages/page_1)
