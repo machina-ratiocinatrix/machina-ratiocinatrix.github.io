@@ -7,7 +7,7 @@
     <h1>Test HTTPS Fetch from a localhost</h1>
     <p>Check the console for fetch results.</p>
     <script>
-        fetch('https://localhost:8443/token.txt')
+        fetch('https://localhost/token.txt')
             .then(response => response.text())
             .then(data => console.log('Fetch successful:', data))
             .catch(error => console.error('Fetch error:', error));
