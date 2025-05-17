@@ -9,9 +9,6 @@ title: Machina Ratiocinatrix
 </pre>
 Machina Ratiocinatrix is an implementation of idea of staging multi-entity language games configured by a human philosopher with the help of the known (and yet unknown) abilities of machines imitating Abstract Intellect (AI). The programs, implemented on this server as 'pages' can be accessed by clicking one of the links below; they will help you: start, orchestrate and conduct conversations of multiple reasoning entities/machines. They will require your indivisible attention and may strain your own intellect, shake your worldview and contradict your judgement. In this ensemble you will be the leader of a group of extremely knowledgeable and attentive interlocutors... and need to _behave_ as such. Most of the time this requires composure, good temper and open-mindedness.<br>**Note:** there is no need in posing nonsensical questions to these machines, they may 'thingk' that _you_ are not intelligent if you do that.
 
-<pre>
-  <i>italicized?</i>
-</pre>
 
 [Page 1](./pages/page_1)
 
