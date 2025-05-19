@@ -10,6 +10,7 @@ title: Machina Ratiocinatrix
 Machina Ratiocinatrix is an implementation of idea of staging multi-entity language games conducted by a human philosopher with the help of known (and yet unknown but explored in the process od the game) abilities of machines imitating Abstract Intellect (AI).<br><br>The programs, implemented on this server as 'pages' can be accessed by clicking one of the links below; they will help you: start, orchestrate and conduct conversations of multiple reasoning entities/machines. 
 
 
+
 [Page 1](./pages/page_1)
 
 [Page 2](./pages/page_2)
