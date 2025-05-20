@@ -22,7 +22,7 @@ function platoHtmlToCmj(htmlText) {
     const utterance = p.textContent.replace(speakerSpan.textContent, '').replace(/:\s*/, '').trim();
 
     let role = 'user';
-    if (speaker.toUpperCase() === 'MACHINA-RATIOCINATRIX') {
+    if (speaker.toUpperCase() === 'MACHINA RATIOCINATRIX') {
       role = 'assistant';
     } else if (speaker.toUpperCase() === 'INSTRUCTIONS') {
       role = 'system';
@@ -111,7 +111,7 @@ function platoTextToCmj(platoText) {
     const utterance = match[2].trim();
 
     let role = 'user';
-    if (speaker.toUpperCase() === 'MACHINA-RATIOCINATRIX') {
+    if (speaker.toUpperCase() === 'MACHINA RATIOCINATRIX') {
       role = 'assistant';
     } else if (speaker.toUpperCase() === 'INSTRUCTIONS') {
       role = 'system';
