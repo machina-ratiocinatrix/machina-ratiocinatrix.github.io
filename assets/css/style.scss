@@ -18,8 +18,8 @@
   color: var(--color-text-primary, #24292e); // Primer's primary text color
 
   // Ensure colon after speaker is visually distinct
-  &::after {
-    content: ":";
-    margin-right: 0.25rem; // Small spacing after colon
-  }
+  //&::after {
+  //  content: ": ";
+  //  margin-right: 0.25rem; // Small spacing after colon
+  //}
 }
