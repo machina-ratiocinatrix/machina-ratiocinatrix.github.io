@@ -1,0 +1,100 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>File Editor</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      max-width: 800px;
+      margin: 20px auto;
+      padding: 20px;
+    }
+    textarea {
+      width: 100%;
+      height: 300px;
+      margin-top: 10px;
+    }
+    button {
+      margin: 10px 5px;
+    }
+    #status {
+      color: green;
+      margin-top: 10px;
+    }
+    #error {
+      color: red;
+      margin-top: 10px;
+    }
+  </style>
+</head>
+<body>
+  <h1>Simple File Editor</h1>
+  <button onclick="openFile()">Open File</button>
+  <button onclick="saveFile()" id="saveButton" disabled>Save File</button>
+  <textarea id="fileContent" placeholder="File content will appear here..."></textarea>
+  <div id="status"></div>
+  <div id="error"></div>
+
+  <script>
+    let fileHandle; // Store the file handle for saving
+
+    async function openFile() {
+      try {
+        // Prompt user to select a file
+        [fileHandle] = await window.showOpenFilePicker({
+          types: [
+            {
+              description: 'Text Files',
+              accept: {
+                'text/plain': ['.txt'],
+                'text/html': ['.html'],
+                'application/json': ['.json']
+              }
+            }
+          ]
+        });
+
+        // Read the file content
+        const file = await fileHandle.getFile();
+        const content = await file.text();
+
+        // Display content in textarea
+        document.getElementById('fileContent').value = content;
+        document.getElementById('saveButton').disabled = false;
+        document.getElementById('status').textContent = `File opened: ${file.name}`;
+        document.getElementById('error').textContent = '';
+      } catch (err) {
+        if (err.name !== 'AbortError') {
+          document.getElementById('error').textContent = `Error: ${err.message}`;
+          document.getElementById('status').textContent = '';
+        }
+      }
+    }
+
+    async function saveFile() {
+      try {
+        if (!fileHandle) {
+          document.getElementById('error').textContent = 'No file opened to save.';
+          return;
+        }
+
+        // Get the updated content from textarea
+        const newContent = document.getElementById('fileContent').value;
+
+        // Create a writable stream and write the new content
+        const writable = await fileHandle.createWritable();
+        await writable.write(newContent);
+        await writable.close();
+
+        document.getElementById('status').textContent = 'File saved successfully!';
+        document.getElementById('error').textContent = '';
+      } catch (err) {
+        document.getElementById('error').textContent = `Error saving file: ${err.message}`;
+        document.getElementById('status').textContent = '';
+      }
+    }
+  </script>
+</body>
+</html>
