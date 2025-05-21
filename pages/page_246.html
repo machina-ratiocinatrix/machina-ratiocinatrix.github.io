@@ -99,7 +99,7 @@
                 throw new Error('Invalid input: platoText must be a non-empty string');
               }
               if (!platoText.trim()) { // Handles empty string or string with only whitespace
-                return '';
+                return 'start the dialogue here';
               }
 
               const regex = /([A-Za-z0-9_ -]+):\s*(.*?)\n\n/gs;
@@ -109,7 +109,7 @@
               while ((match = regex.exec(platoText)) !== null) {
                 const speaker = match[1].trim();
                 const utterance = match[2].trim().replace(/</g, '&lt;').replace(/>/g, '&gt;'); // Escape HTML characters
-                result += `<p class="dialogue"><span class="speaker">${speaker}</span>: ${utterance}</p>\n`;
+                result += `<p class="dialogue"><span class="speaker">${speaker}</span> ${utterance}</p>\n`;
               }
 
               return result.trimEnd();
