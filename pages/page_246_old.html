@@ -68,9 +68,6 @@
               if (!htmlText || typeof htmlText !== 'string') {
                 throw new Error('Invalid input: htmlText must be a non-empty string');
               }
-              if (!htmlText.trim()) { // Handles empty string or string with only whitespace
-                return '';
-              }
 
               let result = '';
               const parser = new DOMParser();
@@ -97,9 +94,6 @@
             function platoTextToPlatoHtml(platoText) {
               if (!platoText || typeof platoText !== 'string') {
                 throw new Error('Invalid input: platoText must be a non-empty string');
-              }
-              if (!platoText.trim()) { // Handles empty string or string with only whitespace
-                return '';
               }
 
               const regex = /([A-Za-z0-9_ -]+):\s*(.*?)\n\n/gs;
@@ -159,113 +153,52 @@
         <p class="dialogue"><span class="speaker">Machina Ratiocinatrix</span>I think you are oversimplifying it, Thrasymachus, trying to reduce a truely multi-dimensional problem to a single dimension.</p>
         <p class="dialogue"><span class="speaker">Socrates</span>Can you explain what you mean, Machina?</p>
         <script>
-        document.addEventListener('DOMContentLoaded', () => {
+            document.addEventListener('DOMContentLoaded', () => {
+            // Get the main content container
             const contentContainer = document.querySelector('.container-md.markdown-body');
-            if (!contentContainer) {
-                console.error('Main content container (.container-md.markdown-body) not found.');
-                return;
-            }
+            if (!contentContainer) return;
 
-        const h1Element = contentContainer.querySelector('h1');
-        if (!h1Element) {
-            console.error('H1 element not found within content container. The editor might not be placed correctly.');
-            // If H1 is critical for placement, you might want to return or handle this case.
-        }
-
-            // 1. Create a wrapper for the dialogue content
-            const dialogueWrapper = document.createElement('div');
-            dialogueWrapper.id = 'dialogue-content-wrapper';
-
-            // 2. Move existing <p class="dialogue"> elements into this new wrapper
-            // This also removes them from their original position in contentContainer.
-            const existingDialogues = Array.from(contentContainer.querySelectorAll('p.dialogue'));
-            existingDialogues.forEach(p => {
-                dialogueWrapper.appendChild(p);
-            });
-
-            // 3. Create the textarea for editing
+            // Create textarea for editing
             const textarea = document.createElement('textarea');
-            textarea.className = 'form-control'; // Apply GitHub Primer styling
+            textarea.className = 'form-control';
             textarea.style.width = '100%';
             textarea.style.minHeight = '400px';
-            textarea.style.display = 'none'; // Initially hidden
+            textarea.style.display = 'none';
 
-            // 4. Insert the dialogueWrapper and textarea into the DOM, after the H1
-            if (h1Element) {
-                // Element.after() can insert multiple nodes
-                h1Element.after(dialogueWrapper, textarea);
-            } else {
-                // Fallback if H1 wasn't found: prepend to the container.
-                // Adjust if a different fallback is desired.
-                contentContainer.prepend(dialogueWrapper, textarea);
-            }
+            // Insert textarea after content container
+            contentContainer.parentNode.insertBefore(textarea, contentContainer.nextSibling);
 
-            // 5. Load from localStorage or initialize from current dialogue content
+            // Load from localStorage if available
             const savedText = localStorage.getItem('platoText');
-
-            if (savedText !== null) { // Check for null, as "" is a valid saved empty state
-                // If there's saved text, render it.
-                // Ensure platoTextToPlatoHtml handles empty strings gracefully (e.g., returns "").
-                try {
-                    dialogueWrapper.innerHTML = platoTextToPlatoHtml(savedText);
-                } catch (e) {
-                    console.error("Error rendering saved Plato text to HTML:", e);
-                    dialogueWrapper.innerHTML = "<p>Error loading content.</p>";
-                }
-            } else {
-                // No saved text, so use the current HTML content (if any) to populate localStorage.
-                const initialDialogueHtml = dialogueWrapper.innerHTML;
-                if (initialDialogueHtml.trim() !== '') {
-                    try {
-                        const initialPlainText = platoHtmlToPlatoText(initialDialogueHtml);
-                        localStorage.setItem('platoText', initialPlainText);
-                    } catch (e) {
-                        console.error("Error converting initial HTML to Plato text:", e);
-                        // Decide if you want to store an empty string or do something else
-                        localStorage.setItem('platoText', '');
-                    }
-                } else {
-                    // If there's no initial dialogue either, store an empty string in localStorage.
-                    localStorage.setItem('platoText', '');
-                }
+            if (savedText) {
+                contentContainer.innerHTML = platoTextToPlatoHtml(savedText);
             }
 
-            // 6. Event listener to switch to edit mode when dialogue content is clicked
-            dialogueWrapper.addEventListener('click', () => {
-                try {
-                    const plainText = platoHtmlToPlatoText(dialogueWrapper.innerHTML);
-                    textarea.value = plainText;
-                    dialogueWrapper.style.display = 'none';
-                    textarea.style.display = 'block';
-                    textarea.focus();
-                } catch (e) {
-                    console.error("Error converting HTML to Plato text for editing:", e);
-                    alert("Could not switch to edit mode due to a content error.");
-                }
+            // Toggle to editor mode on click
+            contentContainer.addEventListener('click', () => {
+                const plainText = platoHtmlToPlatoText(contentContainer.innerHTML);
+                textarea.value = plainText;
+                contentContainer.style.display = 'none';
+                textarea.style.display = 'block';
+                textarea.focus();
             });
 
-            // 7. Event listener for saving (Ctrl+Enter) in the textarea
+            // Handle Ctrl+Enter to save and render
             textarea.addEventListener('keydown', (event) => {
                 if (event.ctrlKey && event.key === 'Enter') {
-                    event.preventDefault(); // Prevent default Enter behavior (like adding a new line)
                     const newText = textarea.value;
-                    localStorage.setItem('platoText', newText); // Auto-save also does this, but good for explicitness
-                    try {
-                        dialogueWrapper.innerHTML = platoTextToPlatoHtml(newText);
-                        textarea.style.display = 'none';
-                        dialogueWrapper.style.display = 'block';
-                    } catch (e) {
-                        console.error("Error converting Plato text to HTML for display:", e);
-                        alert("Could not save and display content due to a format error.");
-                    }
+                    localStorage.setItem('platoText', newText);
+                    contentContainer.innerHTML = platoTextToPlatoHtml(newText);
+                    textarea.style.display = 'none';
+                    contentContainer.style.display = 'block';
                 }
             });
 
-            // 8. Event listener for auto-saving to localStorage on input
+            // Auto-save to localStorage on input
             textarea.addEventListener('input', () => {
                 localStorage.setItem('platoText', textarea.value);
+                });
             });
-        });
         </script>
     </div>
   </body>
