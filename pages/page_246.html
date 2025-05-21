@@ -183,9 +183,9 @@
             const textarea = document.createElement('textarea');
             textarea.className = 'form-control'; // Apply GitHub Primer styling
             textarea.style.width = '100%';
-            textarea.style.minHeight = '700px';
+            textarea.style.minHeight = '800px';
             textarea.style.display = 'none'; // Initially hidden
-            textarea.style.borderColor = 'lightgrey'; // Add this line
+            textarea.style.setProperty('border', '1px solid lightgrey', 'important');
             // 4. Insert the dialogueWrapper and textarea into the DOM, after the H1
             if (h1Element) {
                 // Element.after() can insert multiple nodes
