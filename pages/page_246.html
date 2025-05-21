@@ -228,8 +228,8 @@
             // 6. Event listener to switch to edit mode when dialogue content is clicked
             dialogueWrapper.addEventListener('click', () => {
                 try {
-                    const plainText = platoHtmlToPlatoText(dialogueWrapper.innerHTML);
-                    textarea.value = `${plainText}\n\n`;
+                    // const plainText = platoHtmlToPlatoText(dialogueWrapper.innerHTML);
+                    textarea.value = platoHtmlToPlatoText(dialogueWrapper.innerHTML);
                     dialogueWrapper.style.display = 'none';
                     textarea.style.display = 'block';
                     textarea.focus();
@@ -245,7 +245,7 @@
                     const newText = textarea.value;
                     localStorage.setItem('platoText', newText); // Auto-save also does this, but good for explicitness
                     try {
-                        dialogueWrapper.innerHTML = platoTextToPlatoHtml(newText);
+                        dialogueWrapper.innerHTML = platoTextToPlatoHtml(`${newText}\n\n`);
                         textarea.style.display = 'none';
                         dialogueWrapper.style.display = 'block';
                     } catch (e) {
