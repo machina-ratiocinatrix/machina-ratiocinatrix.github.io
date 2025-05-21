@@ -202,12 +202,13 @@
                 // If there's saved text, render it.
                 // Ensure platoTextToPlatoHtml handles empty strings gracefully (e.g., returns "").
                 try {
-                    dialogueWrapper.innerHTML = `${platoTextToPlatoHtml(savedText)}\n\n`;
-                } catch (e) {
+                    dialogueWrapper.innerHTML = platoTextToPlatoHtml(savedText);
+                }
+                catch (e) {
                     console.error("Error rendering saved Plato text to HTML:", e);
                     dialogueWrapper.innerHTML = "<p>Error loading content.</p>";
                 }
-            } else {
+                } else {
                 // No saved text, so use the current HTML content (if any) to populate localStorage.
                 const initialDialogueHtml = dialogueWrapper.innerHTML;
                 if (initialDialogueHtml.trim() !== '') {
@@ -228,7 +229,7 @@
             dialogueWrapper.addEventListener('click', () => {
                 try {
                     const plainText = platoHtmlToPlatoText(dialogueWrapper.innerHTML);
-                    textarea.value = plainText;
+                    textarea.value = `${plainText}\n\n`;
                     dialogueWrapper.style.display = 'none';
                     textarea.style.display = 'block';
                     textarea.focus();
