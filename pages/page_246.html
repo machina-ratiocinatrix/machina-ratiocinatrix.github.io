@@ -186,14 +186,8 @@
             textarea.style.minHeight = '850px';
             textarea.style.display = 'none'; // Initially hidden
             textarea.style.setProperty('border', '1px solid lightgrey', 'important');
-            // This listener will re-apply the desired styles every time the textarea gains focus,
-            // aiming to override any conflicting :focus styles from 'form-control' or other CSS.
-            textarea.addEventListener('focus', () => {
-                textarea.style.setProperty('border', '1px solid lightgrey', 'important');
-                // Also, try to remove common focus indicators like box-shadow or outline,
-                // as these can sometimes be mistaken for borders or add to the unwanted effect.
-                textarea.style.setProperty('box-shadow', 'none', 'important');
-                textarea.style.setProperty('outline', 'none', 'important');
+            textarea.style.setProperty('box-shadow', 'none', 'important');
+            textarea.style.setProperty('outline', 'none', 'important');
             // 4. Insert the dialogueWrapper and textarea into the DOM, after the H1
             if (h1Element) {
                 // Element.after() can insert multiple nodes
