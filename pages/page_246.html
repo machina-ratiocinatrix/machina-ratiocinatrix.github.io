@@ -202,7 +202,7 @@
                 // If there's saved text, render it.
                 // Ensure platoTextToPlatoHtml handles empty strings gracefully (e.g., returns "").
                 try {
-                    dialogueWrapper.innerHTML = platoTextToPlatoHtml(savedText);
+                    dialogueWrapper.innerHTML = `${platoTextToPlatoHtml(savedText)}\n\n`;
                 } catch (e) {
                     console.error("Error rendering saved Plato text to HTML:", e);
                     dialogueWrapper.innerHTML = "<p>Error loading content.</p>";
