@@ -374,8 +374,120 @@
             textarea.addEventListener('input', () => {
                 localStorage.setItem('platoText', textarea.value);
             });
+
         });
         </script>
     </div>
+    // This script should be included in your page_246.html
+    <script>
+        /**
+         * Checks if the page is currently in 'html display' state.
+         *
+         * !!! IMPORTANT !!!
+         * You MUST adapt this function to correctly reflect how your page_246.html
+         * manages its states (e.g., 'html display' vs 'text editing').
+         *
+         * Below are a few examples of how you might implement this:
+         *
+         * Example 1: Based on a class on the <body> element.
+         *   If you add a class like 'html-display-mode' to the body when in display mode:
+         *   return document.body.classList.contains('html-display-mode');
+         *
+         * Example 2: Based on the absence of an 'editing-mode' class.
+         *   If you add 'editing-mode' to the body when editing:
+         *   return !document.body.classList.contains('editing-mode');
+         *
+         * Example 3: Based on a global JavaScript variable.
+         *   If you have a variable like `window.currentView = 'display'`:
+         *   return window.currentView === 'display';
+         *
+         * Example 4: Based on the visibility of an editor element.
+         *   const editorElement = document.getElementById('your-text-editor');
+         *   return editorElement && editorElement.style.display === 'none';
+         *
+         * For this template, I'll use an example. Replace it with your actual logic.
+         */
+        // function isInHtmlDisplayState() {
+        //     // ADAPT THIS LINE: This is a placeholder.
+        //     // Replace `document.body.classList.contains('view-mode-html')`
+        //     // with the actual condition that identifies the 'html display' state in your page.
+        //     const inDisplayMode = document.body.classList.contains('view-mode-html');
+        //     if (!inDisplayMode) {
+        //         // Optional: log why it's not in display mode if a specific class is expected
+        //         // console.log("Not in HTML display mode. Body class 'view-mode-html' is missing.");
+        //     }
+        //     return inDisplayMode;
+        // }
+
+        document.addEventListener('keydown', function(event) {
+            // Check for Alt + Shift key combination
+            if (event.altKey && event.shiftKey) {
+                // Check if in 'html display' state using our helper function
+                // if (isInHtmlDisplayState()) {
+                event.preventDefault(); // Prevent any default browser action for Alt+Shift
+
+                console.log('Alt+Shift pressed Launching LLM worker...');
+
+                // try {
+                //     // Ensure the path to worker.js is correct relative to page_246.html
+                //     // Based on your context, 'assets/js/worker.js' seems appropriate if page_246.html is at the root.
+                //     const llmWorker = new Worker('assets/js/worker.js');
+                //
+                //     llmWorker.onmessage = function(e) {
+                //         console.log('Main thread: Message received from worker:', e.data);
+                //         if (e.data.type === 'success') {
+                //             console.log('Worker task successful. LLM Response:', e.data.data);
+                //             // For now, just alerting. Later, you'll process this data.
+                //             alert('Worker finished successfully! Check the console for the LLM response.');
+                //             // TODO: Implement next steps:
+                //             // 1. Append LLM response (e.data.data.choices[0].message.content) to CMJ.
+                //             // 2. Transform CMJ to platoText.
+                //             // 3. Save platoText to local storage.
+                //             // 4. Transform platoText to platoHtml.
+                //             // 5. Display platoHtml on page.
+                //         } else if (e.data.type === 'error') {
+                //             console.error('Main thread: Error message from worker:', e.data.error);
+                //             alert('Worker reported an error: ' + e.data.error);
+                //         }
+                //     };
+                //
+                //     llmWorker.onerror = function(error) {
+                //         console.error('Main thread: An error occurred with the worker script:', error.message, error);
+                //         alert('Failed to initialize or run worker: ' + error.message);
+                //     };
+                //
+                //     // Send parameters to the worker.
+                //     // For this initial stage, we send an empty object. The worker.js
+                //     // has default parameters it will use for the API call.
+                //     // In later stages, you will construct and send the actual
+                //     // CMJ formatted messages here.
+                //     const userQueryParameters = {};
+                //     llmWorker.postMessage(userQueryParameters);
+                //
+                //     console.log('Main thread: Worker launched and an empty message sent (worker will use its defaults).');
+                //
+                // } catch (e) {
+                //     console.error('Main thread: Failed to create or communicate with the worker:', e);
+                //     alert('Error initializing worker: ' + e.message);
+                // }
+
+                // } else {
+                //     console.log('Alt+Shift pressed, but not in HTML display mode (or state check failed). Action ignored.');
+                // }
+            }
+        });
+
+        // --- Important Reminders ---
+        // 1.  Place this script in your `page_246.html`.
+        // 2.  **Crucially, adapt the `isInHtmlDisplayState()` function.** The current implementation
+        //     `document.body.classList.contains('view-mode-html')` is a placeholder.
+        //     You need to change it to accurately detect when your page is in the
+        //     'html display' state and not in 'text editing' mode.
+        // 3.  Verify that the path 'assets/js/worker.js' is correct relative to
+        //     the location of `page_246.html`.
+        // 4.  To test the `isInHtmlDisplayState()` function, ensure that your page's logic
+        //     (which switches between display and edit mode) correctly sets up the condition
+        //     that `isInHtmlDisplayState()` checks for (e.g., adds/removes the specified body class).
+  </script>
   </body>
 </html>
