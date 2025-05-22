@@ -156,9 +156,9 @@
             }
         </script>
 
-        <!-- Initial dialogue content (will be hidden by script if localStorage is used) -->
+        <!-- Initial dialogue content (will be moved by script) -->
         <p class="dialogue"><span class="speaker">Socrates</span>What is justice, my friend?</p>
-        <!-- Commented out other examples for brevity -->
+        <!-- Commented out other examples for brevity, they would also be moved -->
         <!-- <p class="dialogue"><span class="speaker">Thrasymachus</span>Justice is the advantage of the stronger.</p> -->
 
         <script>
@@ -173,21 +173,17 @@
                 console.error('H1 element not found. UI elements might be misplaced.');
             }
 
-            // Capture HTML from original static <p class="dialogue"> elements and then hide them.
-            // These elements are not moved, respecting their original structure for other potential uses,
-            // but are hidden to cede display control to the dynamic dialogueWrapper.
-            const originalStaticDialogueElements = Array.from(contentContainer.querySelectorAll('p.dialogue'));
-            let initialHtmlFromStatic = '';
-            originalStaticDialogueElements.forEach(p => {
-                initialHtmlFromStatic += p.outerHTML; // Capture their HTML content
-                p.style.display = 'none';          // Hide the original static element
-            });
-
-            // 1. Create a wrapper for the dialogue content (will be populated by updateDisplayState)
+            // 1. Create a wrapper for the dialogue content
             const dialogueWrapper = document.createElement('div');
             dialogueWrapper.id = 'dialogue-content-wrapper';
 
-            // 2. Create the textarea for editing
+            // 2. Move existing <p class="dialogue"> elements from contentContainer into dialogueWrapper
+            const existingDialogues = Array.from(contentContainer.querySelectorAll('p.dialogue'));
+            existingDialogues.forEach(p => {
+                dialogueWrapper.appendChild(p); // This also removes them from contentContainer
+            });
+
+            // 3. Create the textarea for editing
             const textarea = document.createElement('textarea');
             textarea.className = 'form-control';
             textarea.style.width = '100%';
@@ -196,16 +192,16 @@
             textarea.style.setProperty('border', '1px solid lightgrey', 'important');
             textarea.style.padding = '10px';
 
-            // 3. Create container and button for file picking
+            // 4. Create container and button for file picking
             const filePickerContainer = document.createElement('div');
             filePickerContainer.id = 'file-picker-container';
+            filePickerContainer.style.display = 'none'; // Initially hidden
             filePickerContainer.style.width = '100%';
             filePickerContainer.style.minHeight = '830px'; // Match textarea height
-            filePickerContainer.style.display = 'flex'; // Changed from 'none' to 'flex' for centering
+            filePickerContainer.style.display = 'flex';
             filePickerContainer.style.justifyContent = 'center';
             filePickerContainer.style.alignItems = 'center';
             filePickerContainer.style.padding = '20px';
-            filePickerContainer.style.display = 'none'; // Initially hidden, updateDisplayState will show it
 
             const chooseFileButton = document.createElement('button');
             chooseFileButton.id = 'chooseFileButton';
@@ -215,30 +211,12 @@
             chooseFileButton.style.fontSize = '1.25rem';
             filePickerContainer.appendChild(chooseFileButton);
 
-            // 4. Insert dynamic elements into the DOM (after H1 or fallback)
+            // 5. Insert elements into the DOM (after H1 or fallback)
             if (h1Element) {
                 h1Element.after(dialogueWrapper, textarea, filePickerContainer);
             } else {
                 contentContainer.prepend(dialogueWrapper, textarea, filePickerContainer); // Fallback
             }
-
-            // 5. Initialize localStorage:
-            // If 'platoText' is null, try to populate from static HTML. Otherwise, use existing.
-            let platoTextForInit = localStorage.getItem('platoText');
-            if (platoTextForInit === null) {
-                if (initialHtmlFromStatic.trim() !== '') {
-                    try {
-                        platoTextForInit = platoHtmlToPlatoText(initialHtmlFromStatic);
-                    } catch (e) {
-                        console.error("Error converting initial static HTML to Plato text:", e);
-                        platoTextForInit = ''; // Fallback to empty string on error
-                    }
-                } else {
-                    platoTextForInit = ''; // No static content, initialize as empty
-                }
-                localStorage.setItem('platoText', platoTextForInit);
-            }
-            // Now, localStorage.getItem('platoText') is guaranteed to be a string (possibly empty).
 
             // 6. Function to update display based on localStorage content
             function updateDisplayState() {
@@ -263,10 +241,13 @@
                 }
             }
 
-            // Initial display update
+            // 7. Initialize: if localStorage is null, set to empty string. Then update display.
+            if (localStorage.getItem('platoText') === null) {
+                localStorage.setItem('platoText', '');
+            }
             updateDisplayState();
 
-            // 7. Event listener for "Choose File" button
+            // 8. Event listener for "Choose File" button
             chooseFileButton.addEventListener('click', async () => {
                 try {
                     const [fileHandle] = await window.showOpenFilePicker({
@@ -281,15 +262,13 @@
                     const fileContent = await file.text();
 
                     localStorage.setItem('platoText', fileContent);
-                    // No need to set textarea.value here, updateDisplayState will handle if we switch to editor
-                    // OR, if we want to go directly to editor:
-                    textarea.value = fileContent;
+                    textarea.value = fileContent; // Load into textarea
+
+                    // Switch to editor mode
                     dialogueWrapper.style.display = 'none';
                     filePickerContainer.style.display = 'none';
                     textarea.style.display = 'block';
                     textarea.focus();
-                    // If not going directly to editor, just call updateDisplayState()
-                    // updateDisplayState();
                 } catch (err) {
                     if (err.name !== 'AbortError') { // User cancelled picker
                         console.error('Error opening file:', err);
@@ -298,14 +277,10 @@
                 }
             });
 
-            // 8. Event listener to switch to edit mode when dialogue content is clicked
+            // 9. Event listener to switch to edit mode when dialogue content is clicked
             dialogueWrapper.addEventListener('click', () => {
                 try {
-                    // Read directly from localStorage to ensure consistency,
-                    // as dialogueWrapper.innerHTML might have formatting quirks.
-                    const plainText = localStorage.getItem('platoText') || '';
-                    // Or, if conversion from current HTML is preferred:
-                    // const plainText = platoHtmlToPlatoText(dialogueWrapper.innerHTML);
+                    const plainText = platoHtmlToPlatoText(dialogueWrapper.innerHTML);
                     textarea.value = plainText;
                     dialogueWrapper.style.display = 'none';
                     textarea.style.display = 'block';
@@ -317,9 +292,9 @@
                 }
             });
 
-            // 9. Event listener for saving (Ctrl+Enter) in the textarea
+            // 10. Event listener for saving (Ctrl+Enter) in the textarea
             textarea.addEventListener('keydown', (event) => {
-                if (event.ctrlKey && event.key === 'Enter') { // Changed from Shift to Enter as per original request context
+                if (event.ctrlKey && event.key === 'Enter') {
                     event.preventDefault();
                     const newText = textarea.value;
                     localStorage.setItem('platoText', newText);
@@ -327,7 +302,7 @@
                 }
             });
 
-            // 10. Event listener for auto-saving to localStorage on input
+            // 11. Event listener for auto-saving to localStorage on input
             textarea.addEventListener('input', () => {
                 localStorage.setItem('platoText', textarea.value);
             });
