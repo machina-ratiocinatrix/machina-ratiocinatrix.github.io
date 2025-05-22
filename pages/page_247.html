@@ -1,0 +1,77 @@
+<!DOCTYPE html>
+<html lang="en-US">
+<head>
+    <title>Machina Ratiocinatrix</title>
+    <style>
+        body { font-family: sans-serif; margin: 20px; }
+        pre { background-color: #f4f4f4; padding: 10px; border: 1px solid #ddd; overflow-x: auto; }
+        .error { color: red; }
+    </style>
+</head>
+<body>
+    <h1>Test HTTPS Fetch from a localhost and API call (via Web Worker)</h1>
+    <p>Check the console and this page for fetch results.</p>
+    <button id="sendRequestBtn">Send Request to LLM</button>
+    <h2>API Response:</h2>
+    <pre id="responseOutput">Click the button to send a request...</pre>
+
+    <script>
+        const responseOutput = document.getElementById('responseOutput');
+        const sendRequestBtn = document.getElementById('sendRequestBtn');
+
+        // Check if Web Workers are supported by the browser
+        if (window.Worker) {
+            console.log('Main: Web Workers are supported.');
+            const myWorker = new Worker('../assets/js/worker.js'); // Make sure 'worker.js' is in the same directory or provide the correct path
+
+            sendRequestBtn.onclick = function() {
+                responseOutput.textContent = 'Sending request to worker...';
+                console.log('Main: Button clicked, sending message to worker.');
+
+                // Define the parameters for the LLM query
+                // You can make this dynamic, e.g., get input from form fields
+                const llmQueryParameters = {
+                    messages: [
+                        { role: "system", content: "You are a witty and concise assistant." },
+                        { role: "user", content: "Explain Web Workers in one sentence." }
+                    ],
+                    max_tokens: 150, // Example of overriding a default
+                    temperature: 0.7   // Example of overriding a default
+                };
+
+                // Send parameters to the worker
+                myWorker.postMessage(llmQueryParameters);
+                console.log('Main: Sent parameters to worker:', llmQueryParameters);
+            };
+
+            // Listen for messages from the worker
+            myWorker.onmessage = function(event) {
+                console.log('Main: Message received from worker:', event.data);
+                const message = event.data;
+
+                if (message.type === 'success') {
+                    responseOutput.classList.remove('error');
+                    responseOutput.textContent = JSON.stringify(message.data, null, 2);
+                } else if (message.type === 'error') {
+                    responseOutput.classList.add('error');
+                    responseOutput.textContent = 'Error from worker: ' + message.error;
+                    console.error('Main: Error received from worker:', message.error);
+                }
+            };
+
+            // Listen for errors from the worker itself (e.g., if the worker script fails to load or has an unhandled exception)
+            myWorker.onerror = function(error) {
+                console.error('Main: Worker error occurred:', error.message, error);
+                responseOutput.classList.add('error');
+                responseOutput.textContent = `Worker error: ${error.message} (filename: ${error.filename}, lineno: ${error.lineno})`;
+            };
+
+        } else {
+            console.log('Main: Your browser doesn\'t support Web Workers.');
+            responseOutput.classList.add('error');
+            responseOutput.textContent = 'Your browser doesn\'t support Web Workers. This demo will not work.';
+            sendRequestBtn.disabled = true;
+        }
+    </script>
+</body>
+</html>

@@ -21,6 +21,8 @@ Machina Ratiocinatrix is an implementation of idea of staging multi-entity langu
 
 [Page 246](./pages/page_246.html)
 
+[Page 247](./pages/page_247.html)
+
 [File Editor](./pages/file_editor.html)
 
 
