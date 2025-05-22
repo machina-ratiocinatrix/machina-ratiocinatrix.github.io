@@ -319,7 +319,7 @@
 
             // 9. Event listener for saving (Ctrl+Enter) in the textarea
             textarea.addEventListener('keydown', (event) => {
-                if (event.ctrlKey && !event.shiftKey && event.key === 'Enter') { // Changed from Shift to Enter as per original request context
+                if (event.ctrlKey && event.key === 'Enter') { // Changed from Shift to Enter as per original request context
                     event.preventDefault();
                     const newText = textarea.value;
                     localStorage.setItem('platoText', newText);
@@ -327,50 +327,7 @@
                 }
             });
 
-            // 10. Event listener for saving to file (Ctrl+Shift+Enter) - Always "Save As"
-            textarea.addEventListener('keydown', async (event) => {
-                if (event.ctrlKey && event.shiftKey && event.key === 'Enter') {
-                    event.preventDefault();
-                    const textToSave = textarea.value;
-
-                    try {
-                        // Always prompt "Save As"
-                        const fileHandle = await window.showSaveFilePicker({
-                            suggestedName: 'dialogue.txt', // You can customize the suggested name
-                            types: [{
-                                description: 'Text Files',
-                                accept: {
-                                    'text/plain': ['.txt', '.md', '.text'],
-                                },
-                            }],
-                        });
-
-                        // Create a FileSystemWritableFileStream to write to.
-                        const writable = await fileHandle.createWritable();
-
-                        // Write the contents of the file to the stream.
-                        await writable.write(textToSave);
-
-                        // Close the file and write the contents to disk.
-                        await writable.close();
-
-                        // If file save was successful, then update localStorage
-                        localStorage.setItem('platoText', textToSave);
-                        updateDisplayState(); // Refresh the view
-
-                        // Optional: alert('Dialogue saved to file!');
-
-                    } catch (err) {
-                        // Handle errors, e.g., if the user cancels the save dialog
-                        if (err.name !== 'AbortError') {
-                            console.error('Error saving file:', err);
-                            alert(`Could not save file: ${err.message}`);
-                        }
-                    }
-                }
-            });
-
-            // 11. Event listener for auto-saving to localStorage on input
+            // 10. Event listener for auto-saving to localStorage on input
             textarea.addEventListener('input', () => {
                 localStorage.setItem('platoText', textarea.value);
             });
