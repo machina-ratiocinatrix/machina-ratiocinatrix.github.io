@@ -1,7 +1,8 @@
 // worker.js
 
 self.onmessage = async function(event) {
-    const userQueryParameters = event.data; // Parameters for the LLM API call from the main thread
+    // Parameters for the LLM API call from the main thread
+    const incomingUserQueryParameters = event.data;
 
     try {
         // --- 1. Fetch the authentication token ---
@@ -13,13 +14,44 @@ self.onmessage = async function(event) {
         const token = (await tokenResponse.text()).trim();
         console.log('Worker: Token fetched successfully.');
 
-        // --- 2. Prepare and make the LLM API call ---
-        const defaultApiPayload = {
+        // --- 2. Fetch instruction ---
+        let instructionText; // Declare here to ensure it's in scope
+        try {
+            console.log('Worker: Fetching instruction from https://localhost');
+            const instructionResponse = await fetch('https://localhost/machina-ratiocinatrix-instruction.txt');
+            if (!instructionResponse.ok) {
+                 console.log(`Worker: HTTP error fetching instruction! status: ${instructionResponse.status}. Using default instruction.`);
+                 // Default instruction if fetching fails or file not found
+                 instructionText = "You are a helpful assistant.";
+            } else {
+                instructionText = (await instructionResponse.text()).trim();
+                console.log('Worker: Instruction fetched successfully.');
+            }
+        } catch (fetchError) {
+            console.error('Worker: Error during instruction file fetch:', fetchError.message, '. Using default instruction.');
+            instructionText = "You are a helpful assistant."; // Default instruction on any fetch error
+        }
+
+        // --- 3. Prepare messages for the API call ---
+        const systemInstructionMessage = { role: "system", content: instructionText };
+        let messagesForApi;
+
+        // Check if the main thread sent any messages
+        if (incomingUserQueryParameters.messages && Array.isArray(incomingUserQueryParameters.messages) && incomingUserQueryParameters.messages.length > 0) {
+            // User provided messages: unshift/prepend the fetched system instruction
+            messagesForApi = [systemInstructionMessage, ...incomingUserQueryParameters.messages];
+        } else {
+            // No messages from user, or an empty array: use the system instruction and a default user prompt
+            messagesForApi = [
+                systemInstructionMessage,
+                { role: "user", content: "What model are you?" } // Default user prompt
+            ];
+        }
+
+        // --- 4. Prepare the final API payload ---
+        const defaultApiParameters = {
             model: "accounts/fireworks/models/llama-v3p1-8b-instruct",
-            messages: [ // Default messages, can be overridden by userQueryParameters.messages
-                { role: "system", content: "You are a helpful assistant." },
-                { role: "user", content: "What model are you?" }
-            ],
+            // Note: 'messages' is omitted here
             max_tokens: 2000,
             prompt_truncate_len: 1500,
             temperature: 1,
@@ -30,15 +62,21 @@ self.onmessage = async function(event) {
             repetition_penalty: 1,
             n: 1,
             ignore_eos: false,
-            stop: "stop", // Assuming "stop" is a literal string or your API handles it
+            stop: "stop",
             response_format: null,
             stream: false,
             context_length_exceeded_behavior: "truncate"
         };
 
-        // Merge user-provided parameters with defaults. User parameters take precedence.
-        const finalApiPayload = { ...defaultApiPayload, ...userQueryParameters };
+        // Merge default parameters, then incoming user parameters (which might override temp, max_tokens, etc.),
+        // and finally, explicitly set the constructed 'messagesForApi'.
+        const finalApiPayload = {
+            ...defaultApiParameters,
+            ...incomingUserQueryParameters, // User-specific parameters like temperature, max_tokens will override defaults
+            messages: messagesForApi      // Ensure our carefully constructed messages array is used
+        };
 
+        // --- 5. Make the LLM API call ---
         const apiOptions = {
             method: 'POST',
             headers: {
@@ -70,7 +108,7 @@ self.onmessage = async function(event) {
         self.postMessage({ type: 'success', data: apiData });
 
     } catch (error) {
-        console.error('Worker: An error occurred:', error.message);
+        console.error('Worker: An error occurred:', error.message, error); // Log the full error object for more details
         // Send the error back to the main thread
         self.postMessage({ type: 'error', error: error.message });
     }
