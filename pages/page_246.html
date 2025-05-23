@@ -404,131 +404,105 @@
             textarea.addEventListener('input', () => {
                 localStorage.setItem('platoText', textarea.value);
             });
-        });
+                       // NOW, MOVE THE ALT+SHIFT LISTENER HERE:
+            document.addEventListener('keydown', function(event) {
+                if (event.altKey && event.shiftKey) {
+                    event.preventDefault();
 
-        // This script block is usually at the end of your <body> or in a separate .js file
-        // Ensure 'dialogueWrapper' and 'platoHtmlToCmj' are accessible here.
-        // If this listener is outside the DOMContentLoaded where dialogueWrapper is defined:
-        // const dialogueWrapper = document.getElementById('dialogue-content-wrapper');
-        document.addEventListener('keydown', function(event) {
-            // Check for Alt + Shift key combination
-            if (event.altKey && event.shiftKey) {
-                event.preventDefault(); // Prevent any default browser action for Alt+Shift
+                    const currentDialogueWrapper = document.getElementById('dialogue-content-wrapper');
+                    if (!currentDialogueWrapper) {
+                        console.error('Alt+Shift: dialogue-content-wrapper not found.');
+                        alert('Error: Could not find the dialogue content to send.');
+                        return;
+                    }
 
-                // Get the dialogueWrapper element.
-                // This assumes dialogueWrapper is either a global variable or accessible in this scope.
-                // If not, you might need to get it like this:
-                const currentDialogueWrapper = document.getElementById('dialogue-content-wrapper');
-                if (!currentDialogueWrapper) {
-                    console.error('Alt+Shift: dialogue-content-wrapper not found.');
-                    alert('Error: Could not find the dialogue content to send.');
-                    return;
-                }
+                    const htmlContent = currentDialogueWrapper.innerHTML;
+                    if (!htmlContent || htmlContent.trim() === '') {
+                        console.log('Alt+Shift: Dialogue content is empty. Nothing to send.');
+                        alert('Dialogue is empty. Please add some content first.');
+                        return;
+                    }
 
-                const htmlContent = currentDialogueWrapper.innerHTML;
-                if (!htmlContent || htmlContent.trim() === '') {
-                    console.log('Alt+Shift: Dialogue content is empty. Nothing to send.');
-                    alert('Dialogue is empty. Please add some content first.');
-                    return;
-                }
+                    console.log('Alt+Shift pressed. Preparing to send dialogue to LLM worker...');
 
-                console.log('Alt+Shift pressed. Preparing to send dialogue to LLM worker...');
+                    try {
+                        const cmjMessages = platoHtmlToCmj(htmlContent); // platoHtmlToCmj is global
 
-                try {
-                    // 1. Transform platoHtml to CMJ (string)
-                    const cmjMessages = platoHtmlToCmj(htmlContent);
+                        const userQueryParameters = {
+                            messages: cmjMessages
+                        };
 
-                    // 3. Prepare the parameters for the worker
-                    const userQueryParameters = {
-                        messages: cmjMessages
-                        // You can add other parameters here if needed, e.g., max_tokens, temperature
-                        // If not provided, the worker will use its defaults for these.
-                    };
+                        console.log('Alt+Shift: Launching LLM worker with CMJ messages:', userQueryParameters);
+                        const llmWorker = new Worker('../assets/js/worker.js');
 
-                    // 4. Launch the worker and send the data
-                    console.log('Alt+Shift: Launching LLM worker with CMJ messages:', userQueryParameters);
-                    const llmWorker = new Worker('../assets/js/worker.js'); // Ensure this path is correct
+                        llmWorker.onmessage = function(e) {
+                            console.log('Main thread: Message received from worker:', e.data);
+                            if (e.data.type === 'success') {
+                                console.log('Worker task successful. LLM Response:', e.data.data);
 
-                    llmWorker.onmessage = function(e) {
-                        console.log('Main thread: Message received from worker:', e.data);
-                        if (e.data.type === 'success') {
-                            console.log('Worker task successful. LLM Response:', e.data.data);
-                            alert('Worker finished successfully! Check the console for the LLM response.'); // You can keep or remove this
+                                try {
+                                    const llmResponseData = e.data.data;
+                                    if (!llmResponseData || !llmResponseData.choices || llmResponseData.choices.length === 0) {
+                                        console.error('LLM response is missing choices.');
+                                        alert('Received an empty or invalid response from the LLM.');
+                                        return;
+                                    }
 
-                            try {
-                                const llmResponseData = e.data.data;
-                                if (!llmResponseData || !llmResponseData.choices || llmResponseData.choices.length === 0) {
-                                    console.error('LLM response is missing choices.');
-                                    alert('Received an empty or invalid response from the LLM.');
-                                    return;
+                                    const assistantMessagePayload = llmResponseData.choices[0].message;
+                                    if (!assistantMessagePayload || typeof assistantMessagePayload.content !== 'string') {
+                                        console.error('LLM response message content is invalid:', assistantMessagePayload);
+                                        alert('Received invalid message content from the LLM.');
+                                        return;
+                                    }
+
+                                    const newCmjMessage = {
+                                        role: assistantMessagePayload.role || 'assistant',
+                                        name: "Machina Ratiocinatrix",
+                                        content: assistantMessagePayload.content.trim()
+                                    };
+
+                                    // cmjMessages (from the outer scope of the Alt+Shift listener) is updated
+                                    cmjMessages.push(newCmjMessage);
+
+                                    // CmjToPlatoText is global
+                                    const updatedPlatoText = CmjToPlatoText(cmjMessages);
+                                    if (typeof updatedPlatoText !== 'string') {
+                                        console.error('Failed to convert updated CMJ to PlatoText.');
+                                        alert('Error processing the LLM response for display.');
+                                        return;
+                                    }
+
+                                    localStorage.setItem('platoText', updatedPlatoText);
+
+                                    // updateDisplayState IS NOW ACCESSIBLE!
+                                    updateDisplayState();
+                                    console.log('Dialogue updated with LLM response.');
+
+                                } catch (processingError) {
+                                    console.error('Error processing LLM response:', processingError);
+                                    alert('An error occurred while processing the LLM response: ' + processingError.message);
                                 }
 
-                                const assistantMessagePayload = llmResponseData.choices[0].message;
-                                if (!assistantMessagePayload || typeof assistantMessagePayload.content !== 'string') {
-                                    console.error('LLM response message content is invalid:', assistantMessagePayload);
-                                    alert('Received invalid message content from the LLM.');
-                                    return;
-                                }
-
-                                // 1. Create the new CMJ message object from the LLM response
-                                //    The LLM provides 'role' and 'content'. We need to add 'name'.
-                                const newCmjMessage = {
-                                    role: assistantMessagePayload.role || 'assistant', // Default to 'assistant' if role is missing
-                                    name: "Machina Ratiocinatrix", // Your designated name for the assistant
-                                    content: assistantMessagePayload.content.trim()
-                                };
-
-                                // 2. Append it to the CMJ Object/Array of messages that we sent to the Worker.
-                                //    'cmjMessages' is accessible here due to closure from the outer scope
-                                //    where it was defined before sending to the worker.
-                                cmjMessages.push(newCmjMessage);
-
-                                // 3. Transform the resulting extended array to platoText format.
-                                const updatedPlatoText = CmjToPlatoText(cmjMessages);
-                                if (typeof updatedPlatoText !== 'string') { // CmjToPlatoText might return empty string on error
-                                    console.error('Failed to convert updated CMJ to PlatoText.');
-                                    alert('Error processing the LLM response for display.');
-                                    return;
-                                }
-
-                                // 4. Save the result to local storage.
-                                localStorage.setItem('platoText', updatedPlatoText);
-
-                                // 5. Transform the text that we saved to platoHtml format and update the Display with this new html.
-                                //    This is handled by updateDisplayState(), which reads from localStorage,
-                                //    converts to platoHtml, and updates the DOM.
-                                //
-                                //    IMPORTANT: Ensure `updateDisplayState` is accessible in this scope.
-                                //    If `updateDisplayState` is defined within a different scope (e.g., another DOMContentLoaded),
-                                //    you'll need to make it globally accessible or move this Alt+Shift listener
-                                //    into the same scope.
-                                updateDisplayState();
-                                console.log('Dialogue updated with LLM response.');
-
-                            } catch (processingError) {
-                                console.error('Error processing LLM response:', processingError);
-                                alert('An error occurred while processing the LLM response: ' + processingError.message);
+                            } else if (e.data.type === 'error') {
+                                console.error('Main thread: Error message from worker:', e.data.error);
+                                alert('Worker reported an error: ' + e.data.error);
                             }
+                        };
 
-                        } else if (e.data.type === 'error') {
-                            console.error('Main thread: Error message from worker:', e.data.error);
-                            alert('Worker reported an error: ' + e.data.error);
-                        }
-                    };
+                        llmWorker.onerror = function(error) {
+                            console.error('Main thread: An error occurred with the worker script:', error.message, error);
+                            alert('Failed to initialize or run worker: ' + error.message);
+                        };
 
-                    llmWorker.onerror = function(error) {
-                        console.error('Main thread: An error occurred with the worker script:', error.message, error);
-                        alert('Failed to initialize or run worker: ' + error.message);
-                    };
+                        llmWorker.postMessage(userQueryParameters);
+                        console.log('Main thread: Worker launched and CMJ messages sent.');
 
-                    llmWorker.postMessage(userQueryParameters);
-                    console.log('Main thread: Worker launched and CMJ messages sent.');
-
-                } catch (e) {
-                    console.error('Alt+Shift: Failed to process dialogue or communicate with the worker:', e);
-                    alert('Error preparing data for LLM: ' + e.message);
+                    } catch (e) {
+                        console.error('Alt+Shift: Failed to process dialogue or communicate with the worker:', e);
+                        alert('Error preparing data for LLM: ' + e.message);
+                    }
                 }
-            }
+            });
         });
         </script>
     </div>
