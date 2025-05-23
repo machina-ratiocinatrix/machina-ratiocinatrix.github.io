@@ -357,8 +357,12 @@
                 }
             });
 
+            // 11. Event listener for auto-saving to localStorage on input
+            textarea.addEventListener('input', () => {
+                localStorage.setItem('platoText', textarea.value);
+            });
             // 10. Event listener for saving to file (Ctrl+Shift+Enter) - Always "Save As"
-            textarea.addEventListener('keydown', async (event) => {
+            document.addEventListener('keydown', async (event) => {
                 if (event.ctrlKey && event.shiftKey && event.key === 'Enter') {
                     event.preventDefault();
                     const textToSave = textarea.value;
@@ -370,7 +374,7 @@
                             types: [{
                                 description: 'Text Files',
                                 accept: {
-                                    'text/plain': ['.txt', '.md', '.text'],
+                                    'text/plain': ['.txt', '.md', '.text', '.plato'],
                                 },
                             }],
                         });
@@ -400,11 +404,7 @@
                 }
             });
 
-            // 11. Event listener for auto-saving to localStorage on input
-            textarea.addEventListener('input', () => {
-                localStorage.setItem('platoText', textarea.value);
-            });
-                       // NOW, MOVE THE ALT+SHIFT LISTENER HERE:
+            // THE ALT+SHIFT LISTENER HERE:
             document.addEventListener('keydown', function(event) {
                 if (event.altKey && event.shiftKey) {
                     event.preventDefault();
