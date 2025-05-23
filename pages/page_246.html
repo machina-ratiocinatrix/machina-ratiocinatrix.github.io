@@ -405,6 +405,7 @@
                 localStorage.setItem('platoText', textarea.value);
             });
         });
+
         // This script block is usually at the end of your <body> or in a separate .js file
         // Ensure 'dialogueWrapper' and 'platoHtmlToCmj' are accessible here.
         // If this listener is outside the DOMContentLoaded where dialogueWrapper is defined:
@@ -452,14 +453,63 @@
                         console.log('Main thread: Message received from worker:', e.data);
                         if (e.data.type === 'success') {
                             console.log('Worker task successful. LLM Response:', e.data.data);
-                            alert('Worker finished successfully! Check the console for the LLM response.');
-                            // TODO: Implement next steps:
-                            // 1. Append LLM response (e.g., e.data.data.choices[0].message) to the CMJ array (cmjMessages).
-                            // 2. Transform the updated CMJ array back to platoText.
-                            //    (You'll need a cmjToPlatoText function for this)
-                            // 3. Save platoText to local storage.
-                            // 4. Transform platoText to platoHtml.
-                            // 5. Display platoHtml on page (call updateDisplayState()).
+                            alert('Worker finished successfully! Check the console for the LLM response.'); // You can keep or remove this
+
+                            try {
+                                const llmResponseData = e.data.data;
+                                if (!llmResponseData || !llmResponseData.choices || llmResponseData.choices.length === 0) {
+                                    console.error('LLM response is missing choices.');
+                                    alert('Received an empty or invalid response from the LLM.');
+                                    return;
+                                }
+
+                                const assistantMessagePayload = llmResponseData.choices[0].message;
+                                if (!assistantMessagePayload || typeof assistantMessagePayload.content !== 'string') {
+                                    console.error('LLM response message content is invalid:', assistantMessagePayload);
+                                    alert('Received invalid message content from the LLM.');
+                                    return;
+                                }
+
+                                // 1. Create the new CMJ message object from the LLM response
+                                //    The LLM provides 'role' and 'content'. We need to add 'name'.
+                                const newCmjMessage = {
+                                    role: assistantMessagePayload.role || 'assistant', // Default to 'assistant' if role is missing
+                                    name: "Machina Ratiocinatrix", // Your designated name for the assistant
+                                    content: assistantMessagePayload.content.trim()
+                                };
+
+                                // 2. Append it to the CMJ Object/Array of messages that we sent to the Worker.
+                                //    'cmjMessages' is accessible here due to closure from the outer scope
+                                //    where it was defined before sending to the worker.
+                                cmjMessages.push(newCmjMessage);
+
+                                // 3. Transform the resulting extended array to platoText format.
+                                const updatedPlatoText = CmjToPlatoText(cmjMessages);
+                                if (typeof updatedPlatoText !== 'string') { // CmjToPlatoText might return empty string on error
+                                    console.error('Failed to convert updated CMJ to PlatoText.');
+                                    alert('Error processing the LLM response for display.');
+                                    return;
+                                }
+
+                                // 4. Save the result to local storage.
+                                localStorage.setItem('platoText', updatedPlatoText);
+
+                                // 5. Transform the text that we saved to platoHtml format and update the Display with this new html.
+                                //    This is handled by updateDisplayState(), which reads from localStorage,
+                                //    converts to platoHtml, and updates the DOM.
+                                //
+                                //    IMPORTANT: Ensure `updateDisplayState` is accessible in this scope.
+                                //    If `updateDisplayState` is defined within a different scope (e.g., another DOMContentLoaded),
+                                //    you'll need to make it globally accessible or move this Alt+Shift listener
+                                //    into the same scope.
+                                updateDisplayState();
+                                console.log('Dialogue updated with LLM response.');
+
+                            } catch (processingError) {
+                                console.error('Error processing LLM response:', processingError);
+                                alert('An error occurred while processing the LLM response: ' + processingError.message);
+                            }
+
                         } else if (e.data.type === 'error') {
                             console.error('Main thread: Error message from worker:', e.data.error);
                             alert('Worker reported an error: ' + e.data.error);
@@ -482,13 +532,5 @@
         });
         </script>
     </div>
-        <script>
-            // This script block is usually at the end of your <body> or in a separate .js file
-            // Ensure 'dialogueWrapper' and 'platoHtmlToCmj' are accessible here.
-            // If this listener is outside the DOMContentLoaded where dialogueWrapper is defined:
-        const dialogueWrapper = document.getElementById('dialogue-content-wrapper');
-
-
-        </script>
   </body>
 </html>

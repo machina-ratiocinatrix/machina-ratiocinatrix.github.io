@@ -4,7 +4,7 @@
     <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <link rel="stylesheet" href="/assets/css/style.css?v=b1124390a122e861b4918632b23394369790a5d0">
-    <title>MACHINA RATIOCINATRIX</title>
+    <title>Machina Ratiocinatrix</title>
     <!-- start custom head snippets, customize with your own _includes/head-custom.html file -->
     <!-- Setup Google Analytics -->
     <!-- You can set your favicon here -->
@@ -16,18 +16,18 @@
         <h1><a href="https://machina-ratiocinatrix.github.io/">Machina Ratiocinatrix</a></h1>
         <script>
             /**
- * Transforms platoHtml format to CMJ (Chat Messages JSON) format.
- * @param {string} htmlText - The platoHtml formatted string.
- * @returns {string} - JSON stringified array of message objects.
- */
-            function platoHtmlToCmj(htmlText) {
-              if (!htmlText || typeof htmlText !== 'string') {
-                throw new Error('Invalid input: htmlText must be a non-empty string');
+             * Transforms platoHtml format to CMJ (Chat Messages JSON) format.
+             * @param {string} platoHtml - The platoHtml formatted string.
+             * @returns {string} - JSON stringified array of message objects.
+             */
+            function platoHtmlToCmj(platoHtml) {
+              if (!platoHtml || typeof platoHtml !== 'string') {
+                throw new Error('Invalid input: platoHtml must be a non-empty string');
               }
 
               const messages = [];
               const parser = new DOMParser();
-              const doc = parser.parseFromString(htmlText, 'text/html');
+              const doc = parser.parseFromString(platoHtml, 'text/html');
               const paragraphs = doc.querySelectorAll('p.dialogue');
 
               paragraphs.forEach(p => {
@@ -51,29 +51,30 @@
                 });
               });
 
-              try {
-                return JSON.stringify(messages, null, 2);
-              } catch (e) {
-                throw new Error('Failed to stringify JSON: ' + e.message);
-              }
+              return messages
+              // try {
+              //   return JSON.stringify(messages, null, 2);
+              // } catch (e) {
+              //   throw new Error('Failed to stringify JSON: ' + e.message);
+              // }
             }
 
             /**
              * Transforms platoHtml format to platoText format.
-             * @param {string} htmlText - The platoHtml formatted string.
+             * @param {string} platoHtml - The platoHtml formatted string.
              * @returns {string} - The platoText formatted string.
              */
-            function platoHtmlToPlatoText(htmlText) {
-              if (typeof htmlText !== 'string') { // Allow empty string
-                throw new Error('Invalid input: htmlText must be a string');
+            function platoHtmlToPlatoText(platoHtml) {
+              if (typeof platoHtml !== 'string') { // Allow empty string
+                throw new Error('Invalid input: platoHtml must be a string');
               }
-              if (!htmlText.trim()) {
+              if (!platoHtml.trim()) {
                 return '';
               }
 
               let result = '';
               const parser = new DOMParser();
-              const doc = parser.parseFromString(htmlText, 'text/html');
+              const doc = parser.parseFromString(platoHtml, 'text/html');
               const paragraphs = doc.querySelectorAll('p.dialogue');
 
               paragraphs.forEach(p => {
@@ -147,12 +148,41 @@
                   content: utterance
                 });
               }
-
-              try {
-                return JSON.stringify(messages, null, 2);
-              } catch (e) {
-                throw new Error('Failed to stringify JSON: ' + e.message);
+              return messages
+              // try {
+              //   return JSON.stringify(messages, null, 2);
+              // } catch (e) {
+              //   throw new Error('Failed to stringify JSON: ' + e.message);
+              // }
+            }
+            /**
+             * Transforms an array of CMJ message objects to platoText format.
+             * @param {Array<Object>} cmjMessages - An array of CMJ message objects.
+             *                                      Each object should have 'name' and 'content' properties.
+             * @returns {string} - The platoText formatted string.
+             */
+            function CmjToPlatoText(cmjMessages) {
+              if (!Array.isArray(cmjMessages)) {
+                console.error('Invalid input: cmjMessages must be an array.');
+                // Consider throwing an error for more robust handling:
+                // throw new Error('Invalid input: cmjMessages must be an array.');
+                return ''; // Return empty string if input is not an array
               }
+              let platoText = '';
+
+              cmjMessages.forEach(message => {
+                // Ensure the message object has the expected 'name' and 'content' properties
+                if (message && typeof message.name === 'string' && typeof message.content === 'string') {
+                  const speaker = message.name.trim(); // Trim individual parts for cleanliness
+                  const utterance = message.content.trim(); // Trim individual parts for cleanliness
+
+                  // Append the formatted string, ensuring it ends with two newlines
+                  platoText += `${speaker}: ${utterance}\n\n`;
+                } else {
+                  console.warn('Skipping malformed CMJ message object during CmjToPlatoText conversion:', message);
+                }
+              });
+              return platoText;
             }
         </script>
 
@@ -163,11 +193,13 @@
 
         <script>
         document.addEventListener('DOMContentLoaded', () => {
+            // Check whether the page has the container.
             const contentContainer = document.querySelector('.container-md.markdown-body');
             if (!contentContainer) {
                 console.error('Main content container (.container-md.markdown-body) not found.');
                 return;
             }
+            // Check whether the page has a header.
             const h1Element = contentContainer.querySelector('h1');
             if (!h1Element) {
                 console.error('H1 element not found. UI elements might be misplaced.');
@@ -243,6 +275,7 @@
             // 6. Function to update display based on localStorage content
             function updateDisplayState() {
                 const currentPlatoText = localStorage.getItem('platoText');
+                // If there is some text.
                 if (currentPlatoText && currentPlatoText.trim() !== '') {
                     try {
                         dialogueWrapper.innerHTML = platoTextToPlatoHtml(currentPlatoText);
@@ -262,10 +295,8 @@
                     textarea.value = ''; // Clear textarea
                 }
             }
-
             // Initial display update
             updateDisplayState();
-
             // 7. Event listener for "Choose File" button
             chooseFileButton.addEventListener('click', async () => {
                 try {
@@ -273,7 +304,7 @@
                         types: [{
                             description: 'Text Files',
                             accept: {
-                                'text/plain': ['.txt', '.md', '.text'],
+                                'text/plain': ['.txt', '.md', '.text', '.plato'],
                             }
                         }]
                     });
@@ -297,7 +328,6 @@
                     }
                 }
             });
-
             // 8. Event listener to switch to edit mode when dialogue content is clicked
             dialogueWrapper.addEventListener('click', () => {
                 try {
@@ -319,7 +349,7 @@
 
             // 9. Event listener for saving (Ctrl+Enter) in the textarea
             textarea.addEventListener('keydown', (event) => {
-                if (event.ctrlKey && event.key === 'Enter') { // Changed from Shift to Enter as per original request context
+                if (event.ctrlKey && !event.shiftKey && event.key === 'Enter') { // Changed from Shift to Enter as per original request context
                     event.preventDefault();
                     const newText = textarea.value;
                     localStorage.setItem('platoText', newText);
@@ -327,10 +357,151 @@
                 }
             });
 
-            // 10. Event listener for auto-saving to localStorage on input
+            // 10. Event listener for saving to file (Ctrl+Shift+Enter) - Always "Save As"
+            textarea.addEventListener('keydown', async (event) => {
+                if (event.ctrlKey && event.shiftKey && event.key === 'Enter') {
+                    event.preventDefault();
+                    const textToSave = textarea.value;
+
+                    try {
+                        // Always prompt "Save As"
+                        const fileHandle = await window.showSaveFilePicker({
+                            suggestedName: 'dialogue.txt', // You can customize the suggested name
+                            types: [{
+                                description: 'Text Files',
+                                accept: {
+                                    'text/plain': ['.txt', '.md', '.text'],
+                                },
+                            }],
+                        });
+
+                        // Create a FileSystemWritableFileStream to write to.
+                        const writable = await fileHandle.createWritable();
+
+                        // Write the contents of the file to the stream.
+                        await writable.write(textToSave);
+
+                        // Close the file and write the contents to disk.
+                        await writable.close();
+
+                        // If file save was successful, then update localStorage
+                        localStorage.setItem('platoText', textToSave);
+                        updateDisplayState(); // Refresh the view
+
+                        // Optional: alert('Dialogue saved to file!');
+
+                    } catch (err) {
+                        // Handle errors, e.g., if the user cancels the save dialog
+                        if (err.name !== 'AbortError') {
+                            console.error('Error saving file:', err);
+                            alert(`Could not save file: ${err.message}`);
+                        }
+                    }
+                }
+            });
+
+            // 11. Event listener for auto-saving to localStorage on input
             textarea.addEventListener('input', () => {
                 localStorage.setItem('platoText', textarea.value);
             });
+        });
+        // This script block is usually at the end of your <body> or in a separate .js file
+        // Ensure 'dialogueWrapper' and 'platoHtmlToCmj' are accessible here.
+        // If this listener is outside the DOMContentLoaded where dialogueWrapper is defined:
+        // const dialogueWrapper = document.getElementById('dialogue-content-wrapper');
+        document.addEventListener('keydown', function(event) {
+            // Check for Alt + Shift key combination
+            if (event.altKey && event.shiftKey) {
+                event.preventDefault(); // Prevent any default browser action for Alt+Shift
+
+                // Get the dialogueWrapper element.
+                // This assumes dialogueWrapper is either a global variable or accessible in this scope.
+                // If not, you might need to get it like this:
+                const currentDialogueWrapper = document.getElementById('dialogue-content-wrapper');
+                if (!currentDialogueWrapper) {
+                    console.error('Alt+Shift: dialogue-content-wrapper not found.');
+                    alert('Error: Could not find the dialogue content to send.');
+                    return;
+                }
+
+                const htmlContent = currentDialogueWrapper.innerHTML;
+                if (!htmlContent || htmlContent.trim() === '') {
+                    console.log('Alt+Shift: Dialogue content is empty. Nothing to send.');
+                    alert('Dialogue is empty. Please add some content first.');
+                    return;
+                }
+
+                console.log('Alt+Shift pressed. Preparing to send dialogue to LLM worker...');
+
+                try {
+                    // 1. Transform platoHtml to CMJ (string)
+                    const cmjMessages = platoHtmlToCmj(htmlContent);
+
+                    // 3. Prepare the parameters for the worker
+                    const userQueryParameters = {
+                        messages: cmjMessages
+                        // You can add other parameters here if needed, e.g., max_tokens, temperature
+                        // If not provided, the worker will use its defaults for these.
+                    };
+
+                    // 4. Launch the worker and send the data
+                    console.log('Alt+Shift: Launching LLM worker with CMJ messages:', userQueryParameters);
+                    const llmWorker = new Worker('../assets/js/worker.js'); // Ensure this path is correct
+
+                    llmWorker.onmessage = function(e) {
+                        console.log('Main thread: Message received from worker:', e.data);
+                        if (e.data.type === 'success') {
+                            console.log('Worker task successful. LLM Response:', e.data.data);
+                            alert('Worker finished successfully! Check the console for the LLM response.');
+                            // TODO: Implement next steps:
+                            // 1. Append LLM response (e.g., e.data.data.choices[0].message) to the CMJ array (cmjMessages).
+                            // 2. Transform the updated CMJ array back to platoText.
+                            //    (You'll need a cmjToPlatoText function for this)
+                            // 3. Save platoText to local storage.
+                            // 4. Transform platoText to platoHtml.
+                            // 5. Display platoHtml on page (call updateDisplayState()).
+                            //
+                            // Here's what came back as data:
+                            // {
+                            //     "id": "95c2bdd8-31eb-424b-a328-629ca5b3de10",
+                            //     "object": "chat.completion",
+                            //     "created": 1748001032,
+                            //     "model": "accounts/fireworks/models/llama-v3p1-8b-instruct",
+                            //     "choices": [
+                            //         {
+                            //             "index": 0,
+                            //             "message": {
+                            //                 "role": "assistant",
+                            //                 "content": "I pose the question to Machina Ratiocinatrix:\n\n\"Good Machina, what is justice? Is it a product of societal norms, a natural principle, or something else entirely? What criteria does it fulfill to be considered just?\""
+                            //             },
+                            //             "finish_reason": "stop"
+                            //         }
+                            //     ],
+                            //     "usage": {
+                            //         "prompt_tokens": 50,
+                            //         "total_tokens": 100,
+                            //         "completion_tokens": 50
+                            //     }
+                            // }
+                        } else if (e.data.type === 'error') {
+                            console.error('Main thread: Error message from worker:', e.data.error);
+                            alert('Worker reported an error: ' + e.data.error);
+                        }
+                    };
+
+                    llmWorker.onerror = function(error) {
+                        console.error('Main thread: An error occurred with the worker script:', error.message, error);
+                        alert('Failed to initialize or run worker: ' + error.message);
+                    };
+
+                    llmWorker.postMessage(userQueryParameters);
+                    console.log('Main thread: Worker launched and CMJ messages sent.');
+
+                } catch (e) {
+                    console.error('Alt+Shift: Failed to process dialogue or communicate with the worker:', e);
+                    alert('Error preparing data for LLM: ' + e.message);
+                }
+            }
         });
         </script>
     </div>
