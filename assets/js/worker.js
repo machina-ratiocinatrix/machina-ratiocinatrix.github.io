@@ -26,6 +26,7 @@ self.onmessage = async function(event) {
             } else {
                 instructionText = (await instructionResponse.text()).trim();
                 console.log('Worker: Instruction fetched successfully.');
+                console.log('Worker: Instruction:', instructionText);
             }
         } catch (fetchError) {
             console.error('Worker: Error during instruction file fetch:', fetchError.message, '. Using default instruction.');
@@ -40,6 +41,7 @@ self.onmessage = async function(event) {
         if (incomingUserQueryParameters.messages && Array.isArray(incomingUserQueryParameters.messages) && incomingUserQueryParameters.messages.length > 0) {
             // User provided messages: unshift/prepend the fetched system instruction
             messagesForApi = [systemInstructionMessage, ...incomingUserQueryParameters.messages];
+            console.log('Messages for API:', messagesForApi)
         } else {
             // No messages from user, or an empty array: use the system instruction and a default user prompt
             messagesForApi = [
@@ -75,6 +77,8 @@ self.onmessage = async function(event) {
             ...incomingUserQueryParameters, // User-specific parameters like temperature, max_tokens will override defaults
             messages: messagesForApi      // Ensure our carefully constructed messages array is used
         };
+        console.log('Worker: Final API payload:', finalApiPayload);
+
 
         // --- 5. Make the LLM API call ---
         const apiOptions = {
