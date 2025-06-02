@@ -13,10 +13,10 @@ Machina Ratiocinatrix is an implementation of environment for multi-entity langu
 Theme:
     Justice<br>
 Participants:
-    **Theodotos** - a newly discovered ancient philosopher who anticipated the 
+    <b>Theodotos</b> - a newly discovered ancient philosopher who anticipated the 
             emergence of thingking machines and held dialogues with one or many of 
             them as thought experiments;
-    **Thingking-Machine** - a Machine, performing continuous thingking in the 
+    <b>Thingking-Machine</b> - a Machine, performing continuous thingking in the 
             course of the dialogue, based on its changing context and content.<br>
 Summary:
     Theodotos and Thingking-Machine are discussing Justice with Thrasymachus, 
