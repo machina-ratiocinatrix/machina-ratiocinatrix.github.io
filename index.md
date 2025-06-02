@@ -8,11 +8,10 @@ title: Machina Ratiocinatrix
   book "Cybernetics, or Control and Communication in the Animal and the Machine".
 </pre>
 Machina Ratiocinatrix is an implementation of environment for multi-entity language games conducted by a human philosopher. It has been built for the purpose of exploration of known, and yet unknown but investigated in the process of the game, abilities of the known contemporary machines, imitating Abstract Intellect (AI).<br>
-## The ongoing dialogue
-- **Theme:**...
-- **Summary:**...
-- [The page of the dialogue](pages/dialogue)
-
+# The ongoing dialogue
+### Theme:
+### Summary:
+### [The transcript](pages/dialogue)
 ## Participants:
 **Theodotos** - a newly discovered ancient philosopher who anticipated the emergence of thingking machines and held dialogues with one or many of them as thought experiments;<br><br>
 **Thingking-Machine** - a Machine, performing continuous thingking in the course of the dialogue, based on its changing context and content.
