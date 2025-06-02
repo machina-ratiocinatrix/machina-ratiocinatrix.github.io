@@ -6,8 +6,8 @@ self.onmessage = async function(event) {
 
     try {
         // --- 1. Fetch the authentication token ---
-        console.log('Worker: Fetching token from https://localhost/token.txt');
-        const tokenResponse = await fetch('https://localhost/token.txt');
+        console.log('Worker: Fetching token from https://localhost/');
+        const tokenResponse = await fetch('https://localhost/fireworks.txt');
         if (!tokenResponse.ok) {
              throw new Error(`HTTP error fetching token! status: ${tokenResponse.status}`);
         }

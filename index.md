@@ -7,22 +7,11 @@ title: Machina Ratiocinatrix
   'Machina Ratiocinatrix' is a term used by Norbert Wiener in the introduction to his 
   book "Cybernetics, or Control and Communication in the Animal and the Machine".
 </pre>
-Machina Ratiocinatrix is an implementation of idea of staging multi-entity language games conducted by a human philosopher with the help of known (and yet unknown but explored in the process od the game) abilities of machines imitating Abstract Intellect (AI).<br><br>The programs, implemented on this server as 'pages' can be accessed by clicking one of the links below; they will help you: start, orchestrate and conduct conversations of multiple reasoning entities/machines. 
-
-
-
-[Page 1](./pages/page_1)
-
-[Page 2](./pages/page_2)
-
-[Page 3](./pages/page_3.html)
-
-[Page 4](./pages/page_4)
-
-[Page 246](./pages/page_246.html)
-
-[Page 247](./pages/page_247.html)
-
-[File Editor](./pages/file_editor.html)
-
-
+Machina Ratiocinatrix is an implementation of environment for multi-entity language games conducted by a human philosopher. It has been built for the purpose of exploration of known, and yet unknown but investigated in the process of the game, abilities of contemporary machines imitating Abstract Intellect (AI).<br><br>
+## The ongoing dialogue
+Theme:...
+Summary:...
+[The page of the dialogue](pages/dialogue.md)
+## Participants:
+Theodotos - a newly discovered ancient philosopher who anticipated the emergence of thingking machines and held dialogues with one or many of them as thought experiments;
+Thingking-Machine - a Machine, performing continuous thingking in the course of the dialogue, based on its changing context and content.

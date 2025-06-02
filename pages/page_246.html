@@ -357,11 +357,11 @@
                 }
             });
 
-            // 11. Event listener for auto-saving to localStorage on input
+            // 10. Event listener for auto-saving to localStorage on input
             textarea.addEventListener('input', () => {
                 localStorage.setItem('platoText', textarea.value);
             });
-            // 10. Event listener for saving to file (Ctrl+Shift+Enter) - Always "Save As"
+            // 11. Event listener for saving to file (Ctrl+Shift+Enter) - Always "Save As"
             document.addEventListener('keydown', async (event) => {
                 if (event.ctrlKey && event.shiftKey && event.key === 'Enter') {
                     event.preventDefault();
@@ -404,7 +404,7 @@
                 }
             });
 
-            // THE ALT+SHIFT LISTENER HERE:
+            // 12. Communications with LLM (Alt+Shift):
             document.addEventListener('keydown', function(event) {
                 if (event.altKey && event.shiftKey) {
                     event.preventDefault();
