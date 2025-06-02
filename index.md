@@ -17,7 +17,7 @@ Participants:
             emergence of thingking machines and held dialogues with one or many of 
             them as thought experiments;
     **Thingking-Machine** - a Machine, performing continuous thingking in the 
-            course of the dialogue, based on its changing context and content.
+            course of the dialogue, based on its changing context and content.<br>
 Summary:
     Theodotos and Thingking-Machine are discussing Justice with Thrasymachus, 
     who is claiming that: "Justice is the advantage of the stronger."
