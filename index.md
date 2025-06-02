@@ -14,5 +14,5 @@ Machina Ratiocinatrix is an implementation of environment for multi-entity langu
 - [The page of the dialogue](pages/dialogue)
 
 ## Participants:
-**Theodotos** - a newly discovered ancient philosopher who anticipated the emergence of thingking machines and held dialogues with one or many of them as thought experiments;
+**Theodotos** - a newly discovered ancient philosopher who anticipated the emergence of thingking machines and held dialogues with one or many of them as thought experiments;<br><br>
 **Thingking-Machine** - a Machine, performing continuous thingking in the course of the dialogue, based on its changing context and content.
