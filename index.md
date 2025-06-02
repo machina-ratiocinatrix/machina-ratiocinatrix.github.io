@@ -16,6 +16,6 @@ Machina Ratiocinatrix is an implementation of environment for multi-entity langu
 **Thingking-Machine** - a Machine, performing continuous thingking in the course of the dialogue, based on its changing context and content.
 ### [The transcript](pages/dialogue)
 # Manage
-**Management Page** [here](pages/manage)
+**Machina Ratiocinatrix Management Page** [here](pages/manage)
 # Archive
 **Βιβλιοθήκη** [here](pages/archive)
