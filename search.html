@@ -1,10 +1,200 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <title>Title</title>
+    <meta charset="utf-8">
+    <title>My Custom New Tab</title>
+    <style>
+        /* Basic page setup */
+        body {
+            background-color: #ffffff;
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Oxygen-Sans, Ubuntu, Cantarell, "Helvetica Neue", sans-serif;
+            margin: 0;
+            height: 100vh; /* Full viewport height */
+
+            /* Center the content */
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        /* Dark mode support */
+        @media (prefers-color-scheme: dark) {
+            body {
+                background-color: #202124;
+                color: #e8eaed;
+            }
+
+            .tile a {
+                color: #e8eaed;
+            }
+
+            .tile:hover {
+                background-color: #3c4043;
+            }
+        }
+
+        /* The container for our link tiles */
+        .most-visited-grid {
+            display: grid;
+            /* UPDATED: Changed to 8 columns */
+            grid-template-columns: repeat(8, 1fr);
+            gap: 16px; /* Space between tiles */
+            /* UPDATED: Increased width to accommodate more tiles */
+            max-width: 1000px;
+            padding: 24px;
+        }
+
+        /* Styling for each individual link tile */
+        .tile {
+            border-radius: 4px;
+            transition: background-color 150ms ease-in-out;
+        }
+
+        .tile:hover {
+            background-color: #e8eaed; /* Light grey on hover */
+        }
+
+        .tile a {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            padding: 12px;
+            text-decoration: none;
+            color: #3c4043;
+            text-align: center;
+        }
+
+        /* The icon inside the tile */
+        .tile .icon {
+            background-color: #e8eaed;
+            border-radius: 50%;
+            width: 48px;
+            height: 48px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-bottom: 8px;
+        }
+
+        .tile .icon img {
+            width: 28px;
+            height: 28px;
+        }
+
+        @media (prefers-color-scheme: dark) {
+            .tile .icon {
+                background-color: #303134;
+            }
+        }
+
+        /* The text label for the tile */
+        .tile .label {
+            font-size: 13px;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            max-width: 100%;
+        }
+    </style>
 </head>
 <body>
+
+<div class="most-visited-grid">
+    <!-- Row 1 -->
+    <div class="tile">
+        <a href="https://reasoning-machine.github.io/">
+            <div class="icon">
+                <img src="https://www.google.com/s2/favicons?sz=32&domain_url=https://reasoning-machine.github.io" alt="Reasoning-Machine">
+            </div>
+            <span class="label">Reasoning-Machine</span>
+        </a>
+    </div>
+    <div class="tile">
+        <a href="https://reasoning-machine.github.io/gemini/">
+            <div class="icon">
+                <img src="https://www.google.com/s2/favicons?sz=32&domain_url=https://reasoning-machine.github.io/gemini" alt="gemini">
+            </div>
+            <span class="label">Stack Overflow</span>
+        </a>
+    </div>
+    <div class="tile">
+        <a href="https://reasoning-machine.github.io/oaio">
+            <div class="icon">
+                <img src="https://www.google.com/s2/favicons?sz=32&domain_url=https://reasoning-machine.github.io/oaio" alt="oaio">
+            </div>
+            <span class="label">oaio</span>
+        </a>
+    </div>
+    <div class="tile">
+        <a href="https://reasoning-machine.github.io/grok/">
+            <div class="icon">
+                <img src="https://www.google.com/s2/favicons?sz=32&domain_url=https://reasoning-machine.github.io/grok" alt="grok">
+            </div>
+            <span class="label">grok</span>
+        </a>
+    </div>
+    <div class="tile">
+        <a href="https://reasoning-machine.github.io/meta/">
+            <div class="icon">
+                <img src="https://www.google.com/s2/favicons?sz=32&domain_url=https://reasoning-machine.github.io/meta/" alt="meta">
+            </div>
+            <span class="label">meta</span>
+        </a>
+    </div>
+    <div class="tile">
+        <a href="https://reasoning-machine.github.io/openai/">
+            <div class="icon">
+                <img src="https://www.google.com/s2/favicons?sz=32&domain_url=https://reasoning-machine.github.io/openai/" alt="openai">
+            </div>
+            <span class="label">openai</span>
+        </a>
+    </div>
+    <div class="tile">
+        <a href="https://www.wikipedia.org/">
+            <div class="icon">
+                <img src="https://www.google.com/s2/favicons?sz=32&domain_url=https://wikipedia.org" alt="Wikipedia Favicon">
+            </div>
+            <span class="label">Wikipedia</span>
+        </a>
+    </div>
+    <div class="tile">
+        <a href="https://www.amazon.com/">
+            <div class="icon">
+                <img src="https://www.google.com/s2/favicons?sz=32&domain_url=https://amazon.com" alt="Amazon Favicon">
+            </div>
+            <span class="label">Amazon</span>
+        </a>
+    </div>
+    <div class="tile">
+        <a href="https://machina-ratiocinatrix.github.io">
+            <div class="icon">
+                <img src="https://www.google.com/s2/favicons?sz=32&domain_url=https://machina-ratiocinatrix.github.io" alt="Machina-Ratiocinatrix">
+            </div>
+            <span class="label">Machina-Ratiocinatrix</span>
+        </a>
+    </div>
+
+    <!-- Row 2 -->
+    <div class="tile">
+        <a href="https://www.netflix.com/">
+            <div class="icon">
+                <img src="https://www.google.com/s2/favicons?sz=32&domain_url=https://netflix.com" alt="Netflix Favicon">
+            </div>
+            <span class="label">Netflix</span>
+        </a>
+    </div>
+    <div class="tile">
+        <a href="https://www.linkedin.com/">
+            <div class="icon">
+                <img src="https://www.google.com/s2/favicons?sz=32&domain_url=https://linkedin.com" alt="LinkedIn Favicon">
+            </div>
+            <span class="label">LinkedIn</span>
+        </a>
+    </div>
+    <!-- To complete the 5 rows, copy the <div class="tile">...</div> block and paste it here 30 more times, changing the links and labels. -->
+
+</div>
 
 </body>
 </html>
