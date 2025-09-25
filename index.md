@@ -7,6 +7,9 @@ title: Machina Ratiocinatrix
   'Machina Ratiocinatrix' is a term used by Norbert Wiener in the introduction to his 
   book "Cybernetics, or Control and Communication in the Animal and the Machine".
 
+  Ratiocinatio est oratio ex ipsa re probabile aliquid eliciens, quod expositum et 
+  per se cognitum sua se vi et ratione confirmet.
+
   Ratiocination is a sort of speaking, eliciting something probable from the fact 
   under consideration itself, which being explained and known of itself, confirms 
   itself by its own power and principles. — Marcus Tullius Cicero
