@@ -14,8 +14,7 @@ title: Machina Ratiocinatrix
 
   Ratiocination is a sort of speaking, eliciting something probable from the fact 
   under consideration itself, which being explained and known of itself, confirms 
-  itself by its own power and principles. 
-
+  itself by its own power and principles.
                                                  — Marcus Tullius Cicero
 </pre>
 
