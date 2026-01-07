@@ -1,6 +1,7 @@
 ---
 layout: page
 title: Search
+permalink: /search/
 ---
 
 # Search
@@ -9,7 +10,7 @@ title: Search
 
 <script>
   // Inject Jekyll data into JavaScript
-  const utilities = {{ site.data.utilities | jsonify }};
+  const utilities = {{ site.data.utilities | jsonify }} || [];
   const baseUrl = "{{ site.baseurl }}";
 
   document.addEventListener('DOMContentLoaded', function() {
