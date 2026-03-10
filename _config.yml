@@ -9,6 +9,30 @@ include:
   - LICENSE.md
 url: https://machina-ratiocinatrix.github.io
 
-
 title: Machina Ratiocinatrix
 description: Machina Ratiocinatrix is a term used by Norbert Wiener in the introduction to his book Cybernetics, or Control and Communication in the Animal and the Machine
+
+machine:
+  name: Machina-Ratiocinatrix
+  verb: Machina
+  instructions_file: machina_ratiocinatrix.md
+  token: openai
+  server: https://localhost:443
+  apiUrl: https://api.openai.com/v1/responses
+
+app:
+  worker_name: oaioapi.js
+
+lm:
+  model: gpt-5.2
+  max_output_tokens: 100000
+  reasoning_effort: high
+  reasoning_summary: detailed
+  temperature: 1.0
+
+github_settings:
+  owner: machina-ratiocinatrix
+  repo: machina_ratiocinatrix
+  file_name: machina.yaml
+  branch: main
+  token_file: github.txt
