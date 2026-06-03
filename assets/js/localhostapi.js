@@ -79,7 +79,7 @@ self.onmessage = async function (event) {
 				headers: {
 					'Content-Type': 'text/plain',
 				},
-				body: messages,
+				body: JSON.stringify(messages),
 			});
 			
 			if (response.ok) {
@@ -100,7 +100,7 @@ self.onmessage = async function (event) {
 					headers: {
 						'Content-Type': 'text/plain',
 					},
-					body: messages,
+					body: JSON.stringify(messages),
 				});
 				
 				if (response.ok) {
