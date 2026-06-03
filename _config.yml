@@ -21,7 +21,7 @@ machine:
   apiUrl: https://api.openai.com/v1/responses
 
 app:
-  worker_name: oaioapi.js
+  worker_name: localhostapi.js
 
 lm:
   model: gpt-5.2
