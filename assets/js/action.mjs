@@ -1,6 +1,7 @@
 import {
   platoHtmlToPlatoText,
   platoTextToPlatoHtml,
+  platoTextToCmj,
   platoHtmlToCmj,
   platoHtmlToMuj,
   CmjToPlatoText,
@@ -305,6 +306,8 @@ class MachineApp {
       return;
     }
     
+    const originalHtml = this.elements.dialogueWrapper.innerHTML
+    const cmjMessages = platoHtmlToCmj(originalHtml, 'Machina-Ratiocinatrix');
     console.log('Preparing to send dialogue to LLM worker...');
     this.elements.loadingOverlay.style.display = 'flex';
     

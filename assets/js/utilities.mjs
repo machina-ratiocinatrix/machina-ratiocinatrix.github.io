@@ -371,3 +371,59 @@ export function platoHtmlToMuj(platoHtml, machineName) {
 
     return mujMessages;
 }
+
+/**
+ * Parses a "plato_text" string into an array of standard LLM message objects.
+ *
+ * @param {string} platoText - The raw text received from stdout.
+ * @returns {Array<Object>} Array of messages with role, content, and name.
+ */
+export function platoTextToCmj(platoText) {
+	if (!platoText) return [];
+	
+	const messages = [];
+	
+	// Split by 2 or more newlines to get individual utterances
+	const blocks = platoText.trim().split(/\n{2,}/);
+	
+	// Capture Group 1: The name (everything up to the first colon)
+	// Capture Group 2: The rest of the content (matches across newlines)
+	const regex = /^([^:]+):\s*([\s\S]*)$/;
+	
+	for (const block of blocks) {
+		if (!block.trim()) continue;
+		
+		const match = block.match(regex);
+		
+		if (match) {
+			const name = match[1].trim();
+			let content = match[2].trim();
+			
+			// The Python script outputs "(thinking)", swap it to "(thoughts)"
+			// at the very beginning of the content string as requested.
+			if (content.startsWith('(thinking)')) {
+				content = content.replace('(thinking)', '(thoughts)');
+			}
+			
+			// Reverse the Python script's Markdown cleanup (\n\t -> \n\n)
+			content = content.replace(/\n\t/g, '\n\n');
+			
+			// Determine role. Adjust if your human users have a different name.
+			const role = name.toLowerCase() === 'user' ? 'user' : 'assistant';
+			
+			messages.push({
+				role: role,
+				name: name,
+				content: content
+			});
+		} else {
+			// Fallback for malformed blocks
+			messages.push({
+				role: 'assistant',
+				content: block.replace(/\n\t/g, '\n\n').trim()
+			});
+		}
+	}
+	
+	return messages;
+}
