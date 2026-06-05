@@ -1,6 +1,6 @@
 // localhostapi.js
 let machineConfig = null;
-let messages = null;
+let text = null;
 let llmSettings = null;
 
 
@@ -9,64 +9,15 @@ self.onmessage = async function (event) {
 	machineConfig = event.data.config;
 	console.log('Worker received machine config:', machineConfig);
 	llmSettings = event.data.settings;
-	messages = event.data.messages;
-	console.log('Worker received messages:', messages);
+	text = event.data.messages;
+	console.log('Worker received text:', text);
 
 
 	try {
-		// --- 2. Fetch instruction ---
-		// let instructionText; // Declare here to ensure it's in scope
-		// try {
-		// 	console.log(`Worker: Fetching the Machine instruction from ${machineConfig.server}`);
-		// 	const instructionResponse = await fetch(machineConfig.server + '/' + machineConfig.instructions_file, {mode: "cors"});
-		// 	if (!instructionResponse.ok) {
-		// 		console.log(`Worker: HTTP error fetching instruction! status: ${instructionResponse.status}. Using default instruction.`);
-		// 		// Default instruction if fetching fails or file not found
-		// 		instructionText = "You are a helpful assistant.";
-		// 	} else {
-		// 		instructionText = (await instructionResponse.text()).trim();
-		// 		console.log('Worker: Instruction fetched successfully.');
-		// 		console.log('Worker: Instruction:', instructionText);
-		// 	}
-		// } catch (fetchError) {
-		// 	console.error('Worker: Error during instruction file fetch:', fetchError.message, '. Using default instruction.');
-		// 	instructionText = "You are a helpful assistant."; // Default instruction on any fetch error
-		// }
 
 		// --- 3. Prepare messages for the API call ---
 		let messagesForApi;
-
-		// Check if the main thread sent any messages and add 'developer' messages here.
-		if (messages && Array.isArray(messages) && messages.length > 0) {
-			messagesForApi = messages;
-			console.log('All messages for API:', messagesForApi)
-		} else {
-			// No messages from user, or an empty array: use  a default user prompt
-			messagesForApi = [
-				{role: "user", content: "What model are you?"} // Default user prompt
-			];
-		}
-
-		// // --- 4. Prepare the final API payload ---
-		// const defaultApiParameters = {
-		// 	model: llmSettings.model || machineConfig.llm,
-		// 	instructions: instructionText,
-		// 	max_output_tokens: llmSettings.max_output_tokens || 8192,
-		// 	temperature: llmSettings.temperature || 1.0,
-		// 	reasoning: {
-		// 		"effort": llmSettings.reasoning_effort || "high",
-		// 		"summary": llmSettings.reasoning_summary || "detailed"
-		// 	}
-		// };
-		// console.log('Worker: Default API parameters:', defaultApiParameters)
-		// // Merge default parameters, then incoming user parameters (which might override temp, max_tokens, etc.),
-		// const finalApiPayload = {
-		// 	...defaultApiParameters,
-		// 	input: messagesForApi      // Ensure our carefully constructed messages array is used
-		// };
-		// console.log('Worker: Here is the final API payload:', finalApiPayload);
-
-
+		
 		// --- 5. Make localhost POST
 		
 		const request = 'Machina-Ratiocinatrix'
@@ -79,7 +30,7 @@ self.onmessage = async function (event) {
 				headers: {
 					'Content-Type': 'text/plain',
 				},
-				body: JSON.stringify(messages),
+				body: text,
 			});
 			
 			if (response.ok) {

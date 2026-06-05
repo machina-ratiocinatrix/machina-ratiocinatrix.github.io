@@ -299,9 +299,9 @@ class MachineApp {
   };
   
   runLlm = async () => {
-    const htmlContent = this.elements.dialogueWrapper.innerHTML;
-    if (!htmlContent || htmlContent.trim() === '') {
-      alert('Dialogue is empty. Please add some content first.');
+    const textToSend = localStorage.getItem('multilogue') || '';
+    if (!textToSend || textToSend.trim() === '') {
+      alert('Multilogue is empty. Please add some content first.');
       return;
     }
     
@@ -310,22 +310,20 @@ class MachineApp {
     
     try {
       const cmjMessages = platoHtmlToCmj(htmlContent, this.settings.machine.name);
-      const mujMessages = platoHtmlToMuj(htmlContent, this.settings.machine.name)
-      
       const workerPayload = {
         config: this.settings.machine,
         settings: this.settings.llm,
-        messages: mujMessages
+        messages: textToSend
       };
       
-      console.log('Launching LLM worker with payload:', workerPayload);
+      console.log('Launching Local Machine worker with payload:', workerPayload);
       const llmWorker = new Worker(this.settings.workerUrl);
       
       llmWorker.onmessage = (e) => {
         this.elements.loadingOverlay.style.display = 'none';
         console.log('Main thread: Message received from worker:', e.data);
         if (e.data.type === 'success') {
-          this._processLlmResponse(e.data.data, cmjMessages);
+          this._processLocalMachineResponse(e.data.data, cmjMessages);
         } else if (e.data.type === 'error') {
           console.error('Main thread: Error message from worker:', e.data.error);
           alert(`Worker reported an error: ${e.data.error}`);
@@ -350,14 +348,14 @@ class MachineApp {
     }
   };
   
-  _processLlmResponse = (llmResponseData, originalCmjMessages) => {
+  _processLocalMachineResponse = (lmResponseData, originalCmjMessages) => {
     try {
-      console.log('Worker task successful. LLM Response:', llmResponseData);
-      if (!llmResponseData) {
+      console.log('Worker task successful. Local Machine Response:', lmResponseData);
+      if (!lmResponseData) {
         throw new Error('LLM response is missing message content.');
       }
       
-      const regularText = llmResponseData
+      const regularText = lmResponseData
         .filter(item => item.type === 'message' && Array.isArray(item.content))
         .flatMap(item =>
           item.content
