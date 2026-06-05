@@ -9,7 +9,7 @@ self.onmessage = async function (event) {
 	machineConfig = event.data.config;
 	console.log('Worker received machine config:', machineConfig);
 	llmSettings = event.data.settings;
-	text = event.data.messages;
+	text = event.data.text;
 	console.log('Worker received text:', text);
 
 

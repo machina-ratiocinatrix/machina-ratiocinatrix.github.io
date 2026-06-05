@@ -118,7 +118,7 @@ class MachineApp {
     // Listen for custom events and browser events
     window.addEventListener('localStorageChanged', this.updateDisplayState);
     window.addEventListener('localStorageUpdated', this.updateDisplayState);
-    window.addEventListener('runMachineCommand', this.runLlm);
+    window.addEventListener('runMachineCommand', this.runLm);
     document.addEventListener('visibilitychange', () => {
       if (document.visibilityState === 'visible') {
         this.updateDisplayState();
@@ -133,7 +133,7 @@ class MachineApp {
       this.settings.llm.token = tokenInputVal.trim();
       console.log('Token set manually via pop-up.');
       hideTokenPopup();
-      this.runLlm(); // Optionally, re-trigger the LLM run after getting the token
+      this.runLm(); // Optionally, re-trigger the LLM run after getting the token
     } else {
       alert('Please enter a valid API token.');
     }
@@ -240,7 +240,7 @@ class MachineApp {
     }
     if (event.altKey && event.shiftKey) {
       event.preventDefault();
-      this.runLlm();
+      this.runLm();
     }
   };
   
@@ -298,7 +298,7 @@ class MachineApp {
     }
   };
   
-  runLlm = async () => {
+  runLm = async () => {
     const textToSend = localStorage.getItem('multilogue') || '';
     if (!textToSend || textToSend.trim() === '') {
       alert('Multilogue is empty. Please add some content first.');
@@ -312,8 +312,7 @@ class MachineApp {
       // const cmjMessages = platoHtmlToCmj(htmlContent, this.settings.machine.name);
       const workerPayload = {
         config: this.settings.machine,
-        settings: this.settings.llm,
-        messages: textToSend
+        text: textToSend
       };
       
       console.log('Launching Local Machine worker with payload:', workerPayload);
