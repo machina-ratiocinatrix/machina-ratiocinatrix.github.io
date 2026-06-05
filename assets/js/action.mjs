@@ -307,7 +307,6 @@ class MachineApp {
     }
     
     const originalHtml = this.elements.dialogueWrapper.innerHTML
-    const cmjMessages = platoHtmlToCmj(originalHtml, 'Machina-Ratiocinatrix');
     console.log('Preparing to send dialogue to LLM worker...');
     this.elements.loadingOverlay.style.display = 'flex';
     
@@ -325,7 +324,7 @@ class MachineApp {
         this.elements.loadingOverlay.style.display = 'none';
         console.log('Main thread: Message received from worker:', e.data);
         if (e.data.type === 'success') {
-          this._processLocalMachineResponse(e.data.data, cmjMessages);
+          this._processLocalMachineResponse(e.data.data, originalHtml);
         } else if (e.data.type === 'error') {
           console.error('Main thread: Error message from worker:', e.data.error);
           alert(`Worker reported an error: ${e.data.error}`);
@@ -350,52 +349,23 @@ class MachineApp {
     }
   };
   
-  _processLocalMachineResponse = (lmResponseData, originalCmjMessages) => {
+  _processLocalMachineResponse = (lmResponseData, originalHtmlText) => {
     try {
       console.log('Worker task successful. Local Machine Response:', lmResponseData);
       if (!lmResponseData) {
         throw new Error('LLM response is missing message content.');
       }
       
-      const regularText = lmResponseData
-        .filter(item => item.type === 'message' && Array.isArray(item.content))
-        .flatMap(item =>
-          item.content
-            .filter(contentPart => contentPart && typeof contentPart.text === 'string')
-            .map(contentPart => contentPart.text)
-        )
-        .join(' ');
+      const additionalHtml = platoTextToPlatoHtml(lmResponseData)
       
-      const desoupedText = llmSoupToText(regularText);
-      console.log('Regular text:', desoupedText);
-      
-      const thoughtsText = llmResponseData
-        .filter(item => item.type === 'reasoning' && Array.isArray(item.summary))
-        .flatMap(item =>
-          item.summary
-            .filter(contentPart => contentPart && typeof contentPart.text === 'string')
-            .map(contentPart => contentPart.text)
-        )
-        .join('\n');
-      
-      const desoupedThoughts = llmSoupToText(thoughtsText);
-      console.log('Thoughts text:', desoupedThoughts);
-      
-      const newCmjMessage = {
-        role: 'assistant',
-        name: this.settings.machine.name,
-        content: desoupedText
-      };
-      
-      const updatedCmjMessages = [...originalCmjMessages, newCmjMessage];
-      const updatedPlatoText = CmjToPlatoText(updatedCmjMessages);
+      const newHtmlText = originalHtmlText + additionalHtml
+      const updatedPlatoText = platoHtmlToPlatoText(newHtmlText);
       
       if (typeof updatedPlatoText !== 'string') {
         throw new Error('Failed to convert updated CMJ to PlatoText.');
       }
       
       localStorage.setItem('multilogue', updatedPlatoText);
-      localStorage.setItem('thoughts', desoupedThoughts);
       
       this.updateDisplayState();
       console.log('Dialogue updated with LLM response.');
