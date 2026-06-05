@@ -51,7 +51,7 @@ self.onmessage = async function (event) {
 					headers: {
 						'Content-Type': 'text/plain',
 					},
-					body: JSON.stringify(messages),
+					body: text,
 				});
 				
 				if (response.ok) {
